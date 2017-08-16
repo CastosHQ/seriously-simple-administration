@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.0
+ * Version: 1.0.2
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -31,15 +31,15 @@ if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
 	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
 }
 */
-
 /** Jonathan Local Development */
+/*
 if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
 	define( 'SSP_PODMOTOR_APP_URL', 'http://192.168.10.10/' );
 }
 if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
 	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
 }
-
+*/
 // main plugin code.
 
 if ( ! function_exists( 'ssa_setup_administration' ) ) {
@@ -99,6 +99,7 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 				case 'reset_all':
 					ssa_reset_episodes();
 					ssa_reset_import();
+					ssa_reset_account_details();
 					echo '<p>Database settings reset.</p>';
 					break;
 				case 'reset_import':
@@ -137,5 +138,11 @@ function ssa_reset_episodes() {
 
 function ssa_reset_import() {
 	delete_option( 'ss_podcasting_podmotor_import_podcasts' );
+	delete_option( 'ss_podcasting_podmotor_queue_id' );
 }
 
+function ssa_reset_account_details(){
+	delete_option( 'ss_podcasting_podmotor_account_email' );
+	delete_option( 'ss_podcasting_podmotor_account_api_token' );
+	delete_option( 'ss_podcasting_podmotor_account_id' );
+}
