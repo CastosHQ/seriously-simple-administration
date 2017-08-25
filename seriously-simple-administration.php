@@ -23,25 +23,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'SSP_DEBUG', true );
 
 /** Staging */
-/*
 if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
 	define( 'SSP_PODMOTOR_APP_URL', 'https://staging.seriouslysimplepodcasting.com/' );
 }
 if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
 	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
 }
-*/
-/** Jonathan Local Development */
-/*
+
+/** Jonathan Local Development
 if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
 	define( 'SSP_PODMOTOR_APP_URL', 'http://192.168.10.10/' );
 }
 if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
 	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
 }
-*/
+ */
 // main plugin code.
-
 if ( ! function_exists( 'ssa_setup_administration' ) ) {
 	function ssa_setup_administration() {
 		
