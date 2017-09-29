@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.0.3
+ * Version: 1.0.4
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -99,6 +99,9 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 				case 'get_podcast_files':
 					ssa_get_podcast_files();
 					break;
+				case 'get_podcast_json':
+					ssa_get_podcast_json();
+					break;
 				
 			}
 		}
@@ -118,6 +121,9 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 		
 		$list_podcast_file_urls_url = add_query_arg( 'admin_action', 'get_podcast_files' );
 		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
+		
+		$list_podcast_json_url = add_query_arg( 'admin_action', 'get_podcast_json' );
+		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data</a></p>';
 		
 		echo '</div>';
 	}
@@ -177,7 +183,6 @@ function ssa_get_podcast_files(){
 		$podcast_file_data[ $podcast->ID ] = array(
 			'post_id'      => $podcast->ID,
 			'post_title'   => $podcast->post_title,
-			'post_content' => $podcast->post_content,
 			'post_date'    => $podcast->post_date,
 			'audio_file'   => get_post_meta( $podcast->ID, 'audio_file', true ),
 		);
@@ -186,4 +191,42 @@ function ssa_get_podcast_files(){
 	echo '<div style="background: #fff; border: 1px solid #ccc; padding: 10px;"><pre>';
 	print_r( $podcast_file_data );
 	echo '</pre></div>';
+}
+
+function ssa_get_podcast_json(){
+	$podcast_post_types = ssp_post_types( true );
+	$args               = array(
+		'post_type'      => $podcast_post_types,
+		'posts_per_page' => - 1,
+		'post_status'    => 'any',
+		'orderby'        => 'ID',
+		'meta_query'     => array(
+			'relation' => 'OR',
+			array(
+				'key'     => 'audio_file',
+				'compare' => 'EXISTS',
+			),
+			array(
+				'key'     => 'audio_file',
+				'value'   => '',
+				'compare' => '!=',
+			)
+		),
+	);
+	$podcast_query      = new WP_Query( $args );
+	$podcasts           = $podcast_query->get_posts();
+	
+	$podcast_data = array();
+	foreach ( $podcasts as $podcast ) {
+		$podcast_data[ $podcast->ID ] = array(
+			'post_id'      => $podcast->ID,
+			'post_title'   => $podcast->post_title,
+			'post_content' => '',
+			'post_date'    => $podcast->post_date,
+			'audio_file'   => get_post_meta( $podcast->ID, 'audio_file', true ),
+		);
+	}
+	echo '<textarea cols="200" rows="25">';
+	print_r( wp_json_encode( $podcast_data ) );
+	echo '</textarea>';
 }
