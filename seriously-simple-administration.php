@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.0.5
+ * Version: 1.0.6
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -23,20 +23,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'SSP_DEBUG', true );
 
 /** Staging
-if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
-	define( 'SSP_PODMOTOR_APP_URL', 'https://staging.seriouslysimplepodcasting.com/' );
-}
-if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
-	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
-}
-*/
+ * if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
+ * define( 'SSP_PODMOTOR_APP_URL', 'http://app.seriouslysimplehosting.com/' );
+ * }
+ * if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
+ * define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
+ * }
+ */
+
 /** Jonathan Local Development
-if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
-	define( 'SSP_PODMOTOR_APP_URL', 'http://192.168.10.10/' );
-}
-if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
-	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
-}
+ * if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
+ * define( 'SSP_PODMOTOR_APP_URL', 'http://192.168.10.10/' );
+ * }
+ * if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
+ * define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
+ * }
  */
 
 // main plugin code.
@@ -80,7 +81,7 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 		echo '<div class="wrap">';
 		echo '<h1>Admin settings</h1>';
 		
-		echo '<p>'.SSP_PODMOTOR_APP_URL.'</p>';
+		echo '<p>' . SSP_PODMOTOR_APP_URL . '</p>';
 		
 		if ( isset( $_GET['admin_action'] ) ) {
 			$admin_action = filter_var( $_GET['admin_action'], FILTER_SANITIZE_STRING );
@@ -105,9 +106,12 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 				case 'get_safe_podcast_json':
 					ssa_get_safe_podcast_json();
 					break;
-                case 'get_podcast_files':
-                    ssa_get_podcast_files();
-                    break;
+				case 'get_podcast_files':
+					ssa_get_podcast_files();
+					break;
+				case 'get_podcast_credentials':
+					ssa_get_podcast_credentials();
+					break;
 			}
 		}
 		
@@ -134,8 +138,11 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data without content</a></p>';
 		
 		$list_podcast_file_urls_url = add_query_arg( 'admin_action', 'get_podcast_files' );
-        echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
-
+		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
+		
+		$list_podcast_file_urls_url = add_query_arg( 'admin_action', 'get_podcast_credentials' );
+		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get podcast credentials</a></p>';
+		
 		echo '</div>';
 	}
 }
@@ -155,13 +162,13 @@ function ssa_reset_import() {
 	delete_option( 'ss_podcasting_podmotor_queue_id' );
 }
 
-function ssa_reset_account_details(){
+function ssa_reset_account_details() {
 	delete_option( 'ss_podcasting_podmotor_account_email' );
 	delete_option( 'ss_podcasting_podmotor_account_api_token' );
 	delete_option( 'ss_podcasting_podmotor_account_id' );
 }
 
-function ssa_get_local_podcast_files(){
+function ssa_get_local_podcast_files() {
 	$podcast_post_types = ssp_post_types( true );
 	$args               = array(
 		'post_type'      => $podcast_post_types,
@@ -186,16 +193,16 @@ function ssa_get_local_podcast_files(){
 			),
 		),
 	);
-	$podcast_query = new WP_Query( $args );
-	$podcasts = $podcast_query->get_posts();
+	$podcast_query      = new WP_Query( $args );
+	$podcasts           = $podcast_query->get_posts();
 	
 	$podcast_file_data = array();
 	foreach ( $podcasts as $podcast ) {
 		$podcast_file_data[ $podcast->ID ] = array(
-			'post_id'      => $podcast->ID,
-			'post_title'   => $podcast->post_title,
-			'post_date'    => $podcast->post_date,
-			'audio_file'   => get_post_meta( $podcast->ID, 'audio_file', true ),
+			'post_id'    => $podcast->ID,
+			'post_title' => $podcast->post_title,
+			'post_date'  => $podcast->post_date,
+			'audio_file' => get_post_meta( $podcast->ID, 'audio_file', true ),
 		);
 	}
 	
@@ -204,7 +211,7 @@ function ssa_get_local_podcast_files(){
 	echo '</pre></div>';
 }
 
-function ssa_get_podcast_json(){
+function ssa_get_podcast_json() {
 	$podcast_post_types = ssp_post_types( true );
 	$args               = array(
 		'post_type'      => $podcast_post_types,
@@ -242,7 +249,7 @@ function ssa_get_podcast_json(){
 	echo '</textarea>';
 }
 
-function ssa_get_safe_podcast_json(){
+function ssa_get_safe_podcast_json() {
 	$podcast_post_types = ssp_post_types( true );
 	$args               = array(
 		'post_type'      => $podcast_post_types,
@@ -315,5 +322,15 @@ function ssa_get_podcast_files() {
 	
 	echo '<div style="background: #fff; border: 1px solid #ccc; padding: 10px;"><pre>';
 	print_r( $podcast_file_data );
+	echo '</pre></div>';
+}
+
+function ssa_get_podcast_credentials() {
+	$podmotor_account_id    = get_option( 'ss_podcasting_podmotor_account_id', '' );
+	$podmotor_account_email = get_option( 'ss_podcasting_podmotor_account_email', '' );
+	$podmotor_array         = ssp_podmotor_decrypt_config( $podmotor_account_id, $podmotor_account_email );
+	
+	echo '<div style="background: #fff; border: 1px solid #ccc; padding: 10px;"><pre>';
+	print_r( array( $podmotor_account_id, $podmotor_account_email, $podmotor_array ) );
 	echo '</pre></div>';
 }
