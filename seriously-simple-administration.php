@@ -22,23 +22,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SSP_DEBUG', true );
 
-/** Staging
- * if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
- * define( 'SSP_PODMOTOR_APP_URL', 'http://app.seriouslysimplehosting.com/' );
- * }
- * if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
- * define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
- * }
- */
+// Staging
+/*if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
+	define( 'SSP_PODMOTOR_APP_URL', 'http://app.seriouslysimplehosting.com/' );
+}
+if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
+	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
+}*/
 
-/** Jonathan Local Development
- * if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
- * define( 'SSP_PODMOTOR_APP_URL', 'http://192.168.10.10/' );
- * }
- * if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
- * define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
- * }
- */
+// Jonathan Local Development
+/*if ( ! defined( 'SSP_PODMOTOR_APP_URL' ) ) {
+	define( 'SSP_PODMOTOR_APP_URL', 'http://192.168.10.10/' );
+}
+if ( ! defined( 'SSP_PODMOTOR_EPISODES_URL' ) ) {
+	define( 'SSP_PODMOTOR_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
+}*/
+
 
 // main plugin code.
 if ( ! function_exists( 'ssa_setup_administration' ) ) {
@@ -112,6 +111,9 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 				case 'get_podcast_credentials':
 					ssa_get_podcast_credentials();
 					break;
+				case 'get_safe_podcast_json_via_query':
+					ssa_get_safe_podcast_json_via_query();
+					break;
 			}
 		}
 		
@@ -140,8 +142,11 @@ if ( ! function_exists( 'ssa_reset_development_settings' ) ) {
 		$list_podcast_file_urls_url = add_query_arg( 'admin_action', 'get_podcast_files' );
 		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
 		
-		$list_podcast_file_urls_url = add_query_arg( 'admin_action', 'get_podcast_credentials' );
-		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get podcast credentials</a></p>';
+		$list_podcast_credentials_url = add_query_arg( 'admin_action', 'get_podcast_credentials' );
+		echo '<p><a href="' . esc_url( $list_podcast_credentials_url ) . '">Get podcast credentials</a></p>';
+		
+		$list_podcast_json_via_query_url = add_query_arg( 'admin_action', 'get_safe_podcast_json_via_query' );
+		echo '<p><a href="' . esc_url( $list_podcast_json_via_query_url ) . '">Get all podcast JSON data without content (custom query)</a></p>';
 		
 		echo '</div>';
 	}
@@ -333,4 +338,35 @@ function ssa_get_podcast_credentials() {
 	echo '<div style="background: #fff; border: 1px solid #ccc; padding: 10px;"><pre>';
 	print_r( array( $podmotor_account_id, $podmotor_account_email, $podmotor_array ) );
 	echo '</pre></div>';
+}
+
+function ssa_get_safe_podcast_json_via_query() {
+	
+	global $wpdb;
+	$posts = $wpdb->prefix . 'posts';
+	$postmeta = $wpdb->prefix . 'postmeta';
+	
+	$sql = "SELECT posts.ID, posts.post_title, posts.post_date, postmeta.meta_value as audio_file
+			FROM $posts as posts
+			LEFT JOIN $postmeta as postmeta
+			ON posts.ID = postmeta.post_id
+			WHERE posts.post_type = 'podcast'
+			AND postmeta.meta_key = 'audio_file'
+			AND postmeta.meta_value != ''";
+	$results = $wpdb->get_results( $sql, ARRAY_A );
+	
+	$podcast_data = array();
+	foreach ( $results as $result ) {
+		$podcast_data[ $result['ID'] ] = array(
+			'post_id'      => $result['ID'],
+			'post_title'   => $result['post_title'],
+			'post_content' => '',
+			'post_date'    => $result['post_date'],
+			'audio_file'   => $result['audio_file'],
+		);
+	}
+	
+	echo '<textarea cols="200" rows="25">';
+	print_r( wp_json_encode( $podcast_data, true ) );
+	echo '</textarea>';
 }
