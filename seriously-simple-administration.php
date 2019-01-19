@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.0.7
+ * Version: 1.0.9
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -22,6 +22,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SSP_DEBUG', true );
 
+/**
+ * If environment setting has changed
+ */
+if ( isset( $_GET['ssa_admin_action'] ) ) {
+	
+	$admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
+	if ( 'set_ssp_podcast_environment' === $admin_action ) {
+		ssa_set_podcast_environment();
+	}
+}
+
+/**
+ * Set up environment
+ */
 $ssp_admin_podcast_environment = get_option( 'ssp_admin_podcast_environment', 'production' );
 
 if ( 'staging' === $ssp_admin_podcast_environment ) {
@@ -42,17 +56,10 @@ if ( 'local' === $ssp_admin_podcast_environment ) {
 	}
 }
 
-// main plugin code.
-add_action( 'admin_init', 'ssa_setup_administration' );
-
-if ( ! function_exists( 'ssa_setup_administration' ) ) {
-	function ssa_setup_administration() {
-		ssa_setup_logging_directory();
-	}
-}
-
 /**
- * Checks if logging directory exists and creates it if not */
+ * Checks if logging directory exists and creates it if not
+ */
+add_action( 'init', 'ssa_setup_logging_directory' );
 if ( ! function_exists( 'ssa_setup_logging_directory' ) ) {
 	function ssa_setup_logging_directory() {
 		if ( ! is_dir( SSP_LOG_DIR_PATH ) ) {
@@ -69,7 +76,14 @@ if ( ! function_exists( 'ssa_setup_logging_directory' ) ) {
 add_action( 'admin_menu', 'ssa_add_menu_item' );
 if ( ! function_exists( 'ssa_add_menu_item' ) ) {
 	function ssa_add_menu_item() {
-		add_submenu_page( 'edit.php?post_type=podcast', __( 'Administration', 'seriously-simple-podcasting' ), __( 'Administration', 'seriously-simple-podcasting' ), 'manage_podcast', 'admin', 'ssa_setup_development_settings' );
+		add_submenu_page(
+			'edit.php?post_type=podcast',
+			__( 'Administration', 'seriously-simple-podcasting' ),
+			__( 'Administration', 'seriously-simple-podcasting' ),
+			'manage_podcast',
+			'admin',
+			'ssa_setup_development_settings'
+		);
 	}
 }
 
@@ -86,9 +100,11 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 		
 		echo '<p>' . SSP_PODMOTOR_APP_URL . '</p>';
 		
-		if ( isset( $_GET['admin_action'] ) ) {
+		echo '<p>' . ucwords( $ssp_admin_podcast_environment ) . '</p>';
+		
+		if ( isset( $_GET['ssa_admin_action'] ) ) {
 			
-			$admin_action = filter_var( $_GET['admin_action'], FILTER_SANITIZE_STRING );
+			$admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
 			
 			switch ( $admin_action ) {
 				case 'reset_all':
@@ -128,12 +144,12 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			}
 		}
 		
-		$reset_all_settings_url = add_query_arg( 'admin_action', 'reset_all' );
+		$reset_all_settings_url = add_query_arg( 'ssa_admin_action', 'reset_all' );
 		echo '<p><a href="' . esc_url( $reset_all_settings_url ) . '">Reset all database settings</a></p>';
 		
 		//ss_podcasting_podmotor_import_podcasts
 		
-		$reset_import_podcasts_url = add_query_arg( 'admin_action', 'reset_import' );
+		$reset_import_podcasts_url = add_query_arg( 'ssa_admin_action', 'reset_import' );
 		echo '<p><a href="' . esc_url( $reset_import_podcasts_url ) . '">Reset importer</a></p>';
 		
 		if ( is_file( SSP_LOG_PATH ) ) {
@@ -141,30 +157,30 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
 		}
 		
-		$list_podcast_file_urls_url = add_query_arg( 'admin_action', 'get_local_podcast_files' );
+		$list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_local_podcast_files' );
 		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all local podcast files</a></p>';
 		
-		$list_podcast_json_url = add_query_arg( 'admin_action', 'get_podcast_json' );
+		$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_podcast_json' );
 		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data</a></p>';
 		
-		$list_podcast_json_url = add_query_arg( 'admin_action', 'get_safe_podcast_json' );
+		$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json' );
 		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data without content</a></p>';
 		
-		$list_podcast_file_urls_url = add_query_arg( 'admin_action', 'get_podcast_files' );
+		$list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_podcast_files' );
 		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
 		
-		$list_podcast_credentials_url = add_query_arg( 'admin_action', 'get_podcast_credentials' );
+		$list_podcast_credentials_url = add_query_arg( 'ssa_admin_action', 'get_podcast_credentials' );
 		echo '<p><a href="' . esc_url( $list_podcast_credentials_url ) . '">Get podcast credentials</a></p>';
 		
-		$list_podcast_json_via_query_url = add_query_arg( 'admin_action', 'get_safe_podcast_json_via_query' );
+		$list_podcast_json_via_query_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json_via_query' );
 		echo '<p><a href="' . esc_url( $list_podcast_json_via_query_url ) . '">Get all podcast JSON data without content (custom query)</a></p>';
 		
-		$list_podcast_ids_url = add_query_arg( 'admin_action', 'get_podcast_ids' );
+		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids' );
 		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids</a></p>';
 		
 		if ( 'production' === $ssp_admin_podcast_environment ) {
 			$set_ssp_podcast_environment_url = add_query_arg( array(
-				'admin_action' => 'set_ssp_podcast_environment',
+				'ssa_admin_action' => 'set_ssp_podcast_environment',
 				'environment'  => 'staging',
 			) );
 			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
@@ -172,7 +188,7 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 		
 		if ( 'staging' === $ssp_admin_podcast_environment ) {
 			$set_ssp_podcast_environment_url = add_query_arg( array(
-				'admin_action' => 'set_ssp_podcast_environment',
+				'ssa_admin_action' => 'set_ssp_podcast_environment',
 				'environment'  => 'production',
 			) );
 			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
