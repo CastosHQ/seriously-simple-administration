@@ -268,7 +268,8 @@ function ssa_get_podcast_json() {
 		'post_type'      => $podcast_post_types,
 		'posts_per_page' => - 1,
 		'post_status'    => 'any',
-		'orderby'        => 'ID',
+		'orderby'        => 'post_date',
+		'order'          => 'DESC',
 		'meta_query'     => array(
 			'relation' => 'OR',
 			array(
@@ -306,7 +307,8 @@ function ssa_get_safe_podcast_json() {
 		'post_type'      => $podcast_post_types,
 		'posts_per_page' => - 1,
 		'post_status'    => 'any',
-		'orderby'        => 'ID',
+		'orderby'        => 'post_date',
+		'order'          => 'DESC',
 		'meta_query'     => array(
 			'relation' => 'OR',
 			array(
@@ -344,7 +346,8 @@ function ssa_get_podcast_files() {
 		'post_type'      => $podcast_post_types,
 		'posts_per_page' => - 1,
 		'post_status'    => 'any',
-		'orderby'        => 'ID',
+		'orderby'        => 'post_date',
+		'order'          => 'DESC',
 		'meta_query'     => [
 			'relation' => 'OR',
 			[
@@ -398,7 +401,8 @@ function ssa_get_safe_podcast_json_via_query() {
 			ON posts.ID = postmeta.post_id
 			WHERE posts.post_type = 'podcast'
 			AND postmeta.meta_key = 'audio_file'
-			AND postmeta.meta_value != ''";
+			AND postmeta.meta_value != ''
+			ORDER BY posts.post_date DESC";
 	$results = $wpdb->get_results( $sql, ARRAY_A );
 	
 	$podcast_data = array();
@@ -423,7 +427,8 @@ function ssa_get_podcast_ids() {
 		'post_type'      => $podcast_post_types,
 		'posts_per_page' => - 1,
 		'post_status'    => 'any',
-		'orderby'        => 'ID',
+		'orderby'        => 'post_date',
+		'order'          => 'DESC',
 		'meta_query'     => [
 			'relation' => 'OR',
 			[
