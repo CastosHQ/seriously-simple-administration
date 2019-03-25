@@ -138,6 +138,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 				case 'get_podcast_ids':
 					ssa_get_podcast_ids();
 					break;
+				case 'get_series_data':
+					ssa_get_series_data();
+					break;
 				case 'set_ssp_podcast_environment':
 					ssa_set_podcast_environment();
 					break;
@@ -177,6 +180,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 		
 		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids' );
 		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids</a></p>';
+		
+		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_series_data' );
+		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get all series data</a></p>';
 		
 		if ( 'production' === $ssp_admin_podcast_environment ) {
 			$set_ssp_podcast_environment_url = add_query_arg( array(
@@ -440,7 +446,7 @@ function ssa_get_podcast_ids() {
 	$podcast_query      = new WP_Query( $args );
 	$podcasts           = $podcast_query->get_posts();
 	
-	$podcast_file_data = [];
+	$podcast_file_data = array();
 	foreach ( $podcasts as $podcast ) {
 		$podcast_file_data[ $podcast->ID ] = [
 			'post_id'    => $podcast->ID,
@@ -452,6 +458,17 @@ function ssa_get_podcast_ids() {
 	
 	echo '<textarea cols="200" rows="25">';
 	print_r( wp_json_encode( $podcast_file_data, true ) );
+	echo '</textarea>';
+}
+
+
+function ssa_get_series_data() {
+	$terms = get_terms([
+		'taxonomy' => 'series',
+		'hide_empty' => false,
+	]);
+	echo '<textarea cols="200" rows="25">';
+	print_r( wp_json_encode( $terms, true ) );
 	echo '</textarea>';
 }
 
