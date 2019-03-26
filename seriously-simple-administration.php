@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.0.9
+ * Version: 1.1.0
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -26,7 +26,6 @@ define( 'SSP_DEBUG', true );
  * If environment setting has changed
  */
 if ( isset( $_GET['ssa_admin_action'] ) ) {
-	
 	$admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
 	if ( 'set_ssp_podcast_environment' === $admin_action ) {
 		ssa_set_podcast_environment();
@@ -144,6 +143,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 				case 'set_ssp_podcast_environment':
 					ssa_set_podcast_environment();
 					break;
+				case 'get_episode_ids_by_series':
+					ssa_get_episode_ids_by_series();
+					break;
 			}
 		}
 		
@@ -183,6 +185,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 		
 		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_series_data' );
 		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get all series data</a></p>';
+		
+		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_episode_ids_by_series' );
+		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get Episode IDs by Series</a></p>';
 		
 		if ( 'production' === $ssp_admin_podcast_environment ) {
 			$set_ssp_podcast_environment_url = add_query_arg( array(
@@ -302,7 +307,7 @@ function ssa_get_podcast_json() {
 		);
 	}
 	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_data ) );
+	print_r( wp_json_encode( $podcast_data, JSON_PRETTY_PRINT ) );
 	echo '</textarea>';
 }
 
@@ -340,7 +345,7 @@ function ssa_get_safe_podcast_json() {
 		);
 	}
 	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_data ) );
+	print_r( wp_json_encode( $podcast_data, JSON_PRETTY_PRINT ) );
 	echo '</textarea>';
 }
 
@@ -419,7 +424,7 @@ function ssa_get_safe_podcast_json_via_query() {
 	}
 	
 	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_data, true ) );
+	print_r( wp_json_encode( $podcast_data, JSON_PRETTY_PRINT ) );
 	echo '</textarea>';
 }
 
@@ -457,7 +462,7 @@ function ssa_get_podcast_ids() {
 	}
 	
 	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_file_data, true ) );
+	print_r( wp_json_encode( $podcast_file_data, JSON_PRETTY_PRINT ) );
 	echo '</textarea>';
 }
 
@@ -468,9 +473,34 @@ function ssa_get_series_data() {
 		'hide_empty' => false,
 	]);
 	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $terms, true ) );
+	print_r( wp_json_encode( $terms, JSON_PRETTY_PRINT ) );
 	echo '</textarea>';
 }
+
+function ssa_get_episode_ids_by_series() {
+	global $wpdb;
+	$term_relationships = $wpdb->prefix . 'term_relationships';
+	$term_taxonomy      = $wpdb->prefix . 'term_taxonomy';
+	
+	$sql     = "SELECT term_taxonomy.term_id AS series_id, term_relationships.object_id AS post_id
+			FROM $term_relationships AS term_relationships
+			LEFT join $term_taxonomy AS term_taxonomy
+			ON term_relationships.term_taxonomy_id = term_taxonomy.term_taxonomy_id
+			WHERE term_taxonomy.taxonomy = 'series' ORDER BY series_id";
+	$results = $wpdb->get_results( $sql, ARRAY_A );
+	
+	$podcast_ids_by_series = array();
+	foreach ( $results as $result ) {
+		if ( ! empty( $podcast_ids_by_series[ $result['series_id'] ] ) ) {
+			$podcast_ids_by_series[ $result['series_id'] ] .= ',';
+		}
+		$podcast_ids_by_series[ $result['series_id'] ] .= $result['post_id'];
+	}
+	echo '<textarea cols="200" rows="25">';
+	print_r( wp_json_encode( $podcast_ids_by_series, JSON_PRETTY_PRINT ) );
+	echo '</textarea>';
+}
+
 
 function ssa_set_podcast_environment() {
 	$environment = filter_var( $_GET['environment'], FILTER_SANITIZE_STRING );
