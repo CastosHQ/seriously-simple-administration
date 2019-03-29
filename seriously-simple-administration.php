@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.1.0
+ * Version: 1.1.1
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -469,6 +469,7 @@ function ssa_get_podcast_ids() {
 			'post_title' => $podcast->post_title,
 			'post_date'  => $podcast->post_date,
 			'audio_file' => get_post_meta( $podcast->ID, 'audio_file', true ),
+			'enclosure'  => get_post_meta( $podcast->ID, 'enclosure', true ),
 		];
 	}
 	
