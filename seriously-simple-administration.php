@@ -152,6 +152,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 				case 'get_episode_ids_by_series':
 					ssa_get_episode_ids_by_series();
 					break;
+				case 'ssa_custom_function':
+					ssa_custom_function();
+					break;
 			}
 		}
 		
@@ -194,6 +197,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 		
 		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_episode_ids_by_series' );
 		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get Episode IDs by Series</a></p>';
+		
+		$action_url = add_query_arg( 'ssa_admin_action', 'ssa_custom_function' );
+		echo '<p><a href="' . esc_url( $action_url ) . '">Run Custom Function</a></p>';
 		
 		if ( 'production' === $ssp_admin_podcast_environment ) {
 			$set_ssp_podcast_environment_url = add_query_arg( array(
@@ -480,10 +486,10 @@ function ssa_get_podcast_ids() {
 
 
 function ssa_get_series_data() {
-	$terms = get_terms([
+	$terms = get_terms(array(
 		'taxonomy' => 'series',
 		'hide_empty' => false,
-	]);
+	));
 	echo '<textarea cols="200" rows="25">';
 	print_r( wp_json_encode( $terms, JSON_PRETTY_PRINT ) );
 	echo '</textarea>';
@@ -518,3 +524,5 @@ function ssa_set_podcast_environment() {
 	$environment = filter_var( $_GET['environment'], FILTER_SANITIZE_STRING );
 	update_option( 'ssp_admin_podcast_environment', $environment );
 }
+
+require_once 'ssa-custom-function.php';
