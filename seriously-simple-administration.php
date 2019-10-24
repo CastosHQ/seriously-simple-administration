@@ -48,7 +48,7 @@ if ( 'staging' === $ssp_admin_podcast_environment ) {
 
 if ( 'local' === $ssp_admin_podcast_environment ) {
 	if ( ! defined( 'SSP_CASTOS_APP_URL' ) ) {
-		define( 'SSP_CASTOS_APP_URL', 'http://192.168.10.10/' );
+		define( 'SSP_CASTOS_APP_URL', 'http://castos.test/' );
 	}
 	if ( ! defined( 'SSP_CASTOS_EPISODES_URL' ) ) {
 		define( 'SSP_CASTOS_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
