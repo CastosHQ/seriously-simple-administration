@@ -102,6 +102,7 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 					ssa_reset_import();
 					echo '<p>Import setting reset.</p>';
 					break;
+				/*
 				case 'get_local_podcast_files':
 					ssa_get_local_podcast_files();
 					break;
@@ -138,6 +139,7 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 				case 'ssa_custom_function':
 					ssa_custom_function();
 					break;
+				*/
 			}
 		}
 		
@@ -155,6 +157,7 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
 		}
 		
+		/*
 		$list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_local_podcast_files' );
 		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all local podcast files</a></p>';
 		
@@ -203,6 +206,7 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			) );
 			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
 		}
+		*/
 		
 		echo '</div>';
 	}
