@@ -159,56 +159,60 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
 		}
 
-		$list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_local_podcast_files' );
-		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all local podcast files</a></p>';
+		if ( isset( $_GET['ssp_admin_support_only'] ) ) {
 
-		$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_podcast_json' );
-		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data</a></p>';
+			$list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_local_podcast_files' );
+			echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all local podcast files</a></p>';
 
-		$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json' );
-		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data without content</a></p>';
+			$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_podcast_json' );
+			echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data</a></p>';
 
-		$list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_podcast_files' );
-		echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
+			$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json' );
+			echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data without content</a></p>';
 
-		$list_podcast_credentials_url = add_query_arg( 'ssa_admin_action', 'get_podcast_credentials' );
-		echo '<p><a href="' . esc_url( $list_podcast_credentials_url ) . '">Get podcast credentials</a></p>';
+			$list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_podcast_files' );
+			echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
 
-		$list_podcast_json_via_query_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json_via_query' );
-		echo '<p><a href="' . esc_url( $list_podcast_json_via_query_url ) . '">Get all podcast JSON data without content (custom query)</a></p>';
+			$list_podcast_credentials_url = add_query_arg( 'ssa_admin_action', 'get_podcast_credentials' );
+			echo '<p><a href="' . esc_url( $list_podcast_credentials_url ) . '">Get podcast credentials</a></p>';
 
-		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids' );
-		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids</a></p>';
+			$list_podcast_json_via_query_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json_via_query' );
+			echo '<p><a href="' . esc_url( $list_podcast_json_via_query_url ) . '">Get all podcast JSON data without content (custom query)</a></p>';
 
-		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids_csv' );
-		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids in CSV</a></p>';
+			$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids' );
+			echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids</a></p>';
 
-		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_series_data' );
-		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get all series data</a></p>';
+			$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids_csv' );
+			echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids in CSV</a></p>';
 
-		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_episode_ids_by_series' );
-		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get Episode IDs by Series</a></p>';
+			$list_series_url = add_query_arg( 'ssa_admin_action', 'get_series_data' );
+			echo '<p><a href="' . esc_url( $list_series_url ) . '">Get all series data</a></p>';
 
-		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_all_episodes' );
-		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get All Episodes CSV</a></p>';
+			$list_series_url = add_query_arg( 'ssa_admin_action', 'get_episode_ids_by_series' );
+			echo '<p><a href="' . esc_url( $list_series_url ) . '">Get Episode IDs by Series</a></p>';
 
-		$action_url = add_query_arg( 'ssa_admin_action', 'ssa_custom_function' );
-		echo '<p><a href="' . esc_url( $action_url ) . '">Run Custom Function</a></p>';
+			$list_series_url = add_query_arg( 'ssa_admin_action', 'get_all_episodes' );
+			echo '<p><a href="' . esc_url( $list_series_url ) . '">Get All Episodes CSV</a></p>';
 
-		if ( 'production' === $ssp_admin_podcast_environment ) {
-			$set_ssp_podcast_environment_url = add_query_arg( array(
-				'ssa_admin_action' => 'set_ssp_podcast_environment',
-				'environment'  => 'staging',
-			) );
-			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
-		}
+			$action_url = add_query_arg( 'ssa_admin_action', 'ssa_custom_function' );
+			echo '<p><a href="' . esc_url( $action_url ) . '">Run Custom Function</a></p>';
 
-		if ( 'staging' === $ssp_admin_podcast_environment ) {
-			$set_ssp_podcast_environment_url = add_query_arg( array(
-				'ssa_admin_action' => 'set_ssp_podcast_environment',
-				'environment'  => 'production',
-			) );
-			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
+			if ( 'production' === $ssp_admin_podcast_environment ) {
+				$set_ssp_podcast_environment_url = add_query_arg( array(
+					'ssa_admin_action' => 'set_ssp_podcast_environment',
+					'environment'      => 'staging',
+				) );
+				echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
+			}
+
+			if ( 'staging' === $ssp_admin_podcast_environment ) {
+				$set_ssp_podcast_environment_url = add_query_arg( array(
+					'ssa_admin_action' => 'set_ssp_podcast_environment',
+					'environment'      => 'production',
+				) );
+				echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
+			}
+
 		}
 
 		echo '</div>';
