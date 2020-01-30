@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.2.3
+ * Version: 1.2.4
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
