@@ -530,12 +530,15 @@ function get_all_episodes(){
 
 	$podcast_file_data = array();
 	foreach ( $podcasts as $podcast ) {
+		$terms                             = get_the_terms( $podcast->ID, 'series' );
 		$podcast_file_data[ $podcast->ID ] = [
 			'post_id'    => $podcast->ID,
 			'post_title' => $podcast->post_title,
 			'post_date'  => $podcast->post_date,
 			'audio_file' => get_post_meta( $podcast->ID, 'audio_file', true ),
-			'episode_id' => $podcast->episode_id,
+			'episode_id' => get_post_meta( $podcast->ID, 'podmotor_episode_id', true ),
+			'file_id'    => get_post_meta( $podcast->ID, 'podmotor_file_id', true ),
+			'series_id'  => $terms[0]->term_id,
 		];
 	}
 
