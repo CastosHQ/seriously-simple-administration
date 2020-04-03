@@ -39,7 +39,7 @@ $ssp_admin_podcast_environment = get_option( 'ssp_admin_podcast_environment', 'p
 
 if ( 'staging' === $ssp_admin_podcast_environment ) {
 	if ( ! defined( 'SSP_CASTOS_APP_URL' ) ) {
-		define( 'SSP_CASTOS_APP_URL', 'http://app.seriouslysimplehosting.com/' );
+		define( 'SSP_CASTOS_APP_URL', 'https://app.seriouslysimplehosting.com/' );
 	}
 	if ( ! defined( 'SSP_CASTOS_EPISODES_URL' ) ) {
 		define( 'SSP_CASTOS_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
@@ -100,47 +100,49 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 
 		echo '<p>' . ucwords( $ssp_admin_podcast_environment ) . '</p>';
 
-        $admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
+		if ( isset( $_GET['ssa_admin_action'] ) ) {
+			$admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
 
-        switch ( $admin_action ) {
-            case 'reset_all':
-                ssa_reset_episodes();
-                ssa_reset_import();
-                ssa_reset_account_details();
-                echo '<p>Database settings reset.</p>';
-                break;
-            case 'reset_import':
-                ssa_reset_import();
-                echo '<p>Import setting reset.</p>';
-                break;
-            case 'get_safe_podcast_json':
-                ssa_get_safe_podcast_json();
-                break;
-            case 'get_podcast_credentials':
-                ssa_get_podcast_credentials();
-                break;
-            case 'get_safe_podcast_json_via_query':
-                ssa_get_safe_podcast_json_via_query();
-                break;
-            case 'get_podcast_ids_csv':
-                ssa_get_podcast_ids_csv();
-                break;
-            case 'get_series_data':
-                ssa_get_series_data();
-                break;
-            case 'set_ssp_podcast_environment':
-                ssa_set_podcast_environment();
-                break;
-            case 'get_episode_ids_by_series':
-                ssa_get_episode_ids_by_series();
-                break;
-            case 'get_all_episodes':
-                get_all_episodes();
-                break;
-            case 'ssa_custom_function':
-                ssa_custom_function();
-                break;
-        }
+			switch ( $admin_action ) {
+				case 'reset_all':
+					ssa_reset_episodes();
+					ssa_reset_import();
+					ssa_reset_account_details();
+					echo '<p>Database settings reset.</p>';
+					break;
+				case 'reset_import':
+					ssa_reset_import();
+					echo '<p>Import setting reset.</p>';
+					break;
+				case 'get_safe_podcast_json':
+					ssa_get_safe_podcast_json();
+					break;
+				case 'get_podcast_credentials':
+					ssa_get_podcast_credentials();
+					break;
+				case 'get_safe_podcast_json_via_query':
+					ssa_get_safe_podcast_json_via_query();
+					break;
+				case 'get_podcast_ids_csv':
+					ssa_get_podcast_ids_csv();
+					break;
+				case 'get_series_data':
+					ssa_get_series_data();
+					break;
+				case 'set_ssp_podcast_environment':
+					ssa_set_podcast_environment();
+					break;
+				case 'get_episode_ids_by_series':
+					ssa_get_episode_ids_by_series();
+					break;
+				case 'get_all_episodes':
+					get_all_episodes();
+					break;
+				case 'ssa_custom_function':
+					ssa_custom_function();
+					break;
+			}
+		}
 
 		$reset_all_settings_url = add_query_arg( 'ssa_admin_action', 'reset_all' );
 		echo '<p><a href="' . esc_url( $reset_all_settings_url ) . '">Reset all database settings</a></p>';
@@ -558,4 +560,4 @@ function ssa_set_podcast_environment() {
 	update_option( 'ssp_admin_podcast_environment', $environment );
 }
 
-require_once 'ssa-custom-function.php';
+//require_once 'ssa-custom-function.php';
