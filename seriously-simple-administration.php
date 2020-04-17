@@ -39,7 +39,7 @@ $ssp_admin_podcast_environment = get_option( 'ssp_admin_podcast_environment', 'p
 
 if ( 'staging' === $ssp_admin_podcast_environment ) {
 	if ( ! defined( 'SSP_CASTOS_APP_URL' ) ) {
-		define( 'SSP_CASTOS_APP_URL', 'http://app.seriouslysimplehosting.com/' );
+		define( 'SSP_CASTOS_APP_URL', 'https://app.seriouslysimplehosting.com/' );
 	}
 	if ( ! defined( 'SSP_CASTOS_EPISODES_URL' ) ) {
 		define( 'SSP_CASTOS_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
@@ -560,4 +560,4 @@ function ssa_set_podcast_environment() {
 	update_option( 'ssp_admin_podcast_environment', $environment );
 }
 
-//require_once 'ssa-custom-function.php';
+require_once 'ssa-custom-function.php';
