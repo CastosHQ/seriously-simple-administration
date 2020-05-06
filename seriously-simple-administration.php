@@ -82,14 +82,12 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 
 		echo '<p>' . ucwords( $ssp_admin_podcast_environment ) . '</p>';
 
-		if ( isset( $_GET['ssa_admin_action'] ) ) {
-
-			$log_path = SSP_PLUGIN_PATH . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
-			$log_url  = SSP_PLUGIN_URL . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
-			if ( is_file( $log_path ) ) {
-				echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
-			}
+		$log_path = SSP_PLUGIN_PATH . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
+		$log_url  = SSP_PLUGIN_URL . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
+		if ( is_file( $log_path ) ) {
+			echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
 		}
+
 		echo '</div>';
 	}
 }
