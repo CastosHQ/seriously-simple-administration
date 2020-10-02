@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.2.7
+ * Version: 1.2.8
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -48,7 +48,7 @@ if ( 'staging' === $ssp_admin_podcast_environment ) {
 
 if ( 'local' === $ssp_admin_podcast_environment ) {
 	if ( ! defined( 'SSP_CASTOS_APP_URL' ) ) {
-		define( 'SSP_CASTOS_APP_URL', 'http://castos.test/' );
+		define( 'SSP_CASTOS_APP_URL', 'https://castos.test/' );
 	}
 	if ( ! defined( 'SSP_CASTOS_EPISODES_URL' ) ) {
 		define( 'SSP_CASTOS_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
@@ -138,6 +138,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 				case 'get_all_episodes':
 					get_all_episodes();
 					break;
+				case 'delete_castos_post_meta':
+					delete_castos_post_meta();
+					break;
 				case 'ssa_custom_function':
 					ssa_custom_function();
 					break;
@@ -190,6 +193,9 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 
         $list_series_url = add_query_arg( 'ssa_admin_action', 'get_all_episodes' );
         echo '<p><a href="' . esc_url( $list_series_url ) . '">Get All Episodes CSV</a></p>';
+
+		$delete_castos_post_meta_url = add_query_arg( 'ssa_admin_action', 'delete_castos_post_meta' );
+		echo '<p><a href="' . esc_url( $delete_castos_post_meta_url ) . '">Delete Episode Postmeta</a></p>';
 
         $action_url = add_query_arg( 'ssa_admin_action', 'ssa_custom_function' );
         echo '<p><a href="' . esc_url( $action_url ) . '">Run Custom Function</a></p>';
@@ -558,6 +564,24 @@ function get_all_episodes(){
 function ssa_set_podcast_environment() {
 	$environment = filter_var( $_GET['environment'], FILTER_SANITIZE_STRING );
 	update_option( 'ssp_admin_podcast_environment', $environment );
+}
+
+function delete_castos_post_meta() {
+	$podcast_post_types = ssp_post_types( true );
+	$args               = array(
+		'post_type'      => $podcast_post_types,
+		'posts_per_page' => - 1,
+		'post_status'    => 'any',
+		'orderby'        => 'post_date',
+		'order'          => 'DESC',
+	);
+	$podcast_query      = new WP_Query( $args );
+	$podcasts           = $podcast_query->get_posts();
+
+	foreach ( $podcasts as $podcast ) {
+		delete_post_meta( $podcast->ID, 'podmotor_episode_id' );
+		delete_post_meta( $podcast->ID, 'podmotor_file_id' );
+	}
 }
 
 require_once 'ssa-custom-function.php';
