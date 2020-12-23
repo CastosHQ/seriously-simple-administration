@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.2.8
+ * Version: 1.2.9
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -20,7 +20,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SSP_DEBUG', true );
+if ( ! defined( 'SSP_DEBUG' ) ) {
+	define( 'SSP_DEBUG', true );
+}
+if ( ! defined( 'SCRIPT_DEBUG' ) ) {
+	define( 'SCRIPT_DEBUG', true );
+}
 
 /**
  * If environment setting has changed
@@ -117,14 +122,8 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 				case 'get_safe_podcast_json':
 					ssa_get_safe_podcast_json();
 					break;
-				case 'get_podcast_credentials':
-					ssa_get_podcast_credentials();
-					break;
-				case 'get_safe_podcast_json_via_query':
-					ssa_get_safe_podcast_json_via_query();
-					break;
-				case 'get_podcast_ids_csv':
-					ssa_get_podcast_ids_csv();
+				case 'get_podcast_data_csv':
+					ssa_get_podcast_data_csv();
 					break;
 				case 'get_series_data':
 					ssa_get_series_data();
@@ -135,11 +134,14 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 				case 'get_episode_ids_by_series':
 					ssa_get_episode_ids_by_series();
 					break;
-				case 'get_all_episodes':
-					get_all_episodes();
-					break;
 				case 'delete_castos_post_meta':
 					delete_castos_post_meta();
+					break;
+				case 'get_podpress_json':
+					ssa_get_podpress_json();
+					break;
+				case 'get_episode_data_with_castos_ids':
+					ssa_get_episode_data_with_castos_ids();
 					break;
 				case 'ssa_custom_function':
 					ssa_custom_function();
@@ -150,8 +152,6 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 		$reset_all_settings_url = add_query_arg( 'ssa_admin_action', 'reset_all' );
 		echo '<p><a href="' . esc_url( $reset_all_settings_url ) . '">Reset all database settings</a></p>';
 
-		//ss_podcasting_podmotor_import_podcasts
-
 		$reset_import_podcasts_url = add_query_arg( 'ssa_admin_action', 'reset_import' );
 		echo '<p><a href="' . esc_url( $reset_import_podcasts_url ) . '">Reset importer</a></p>';
 
@@ -161,427 +161,53 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
 		}
 
-        $list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_local_podcast_files' );
-        echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all local podcast files</a></p>';
+		$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json' );
+		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data without content</a></p>';
 
-        $list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_podcast_json' );
-        echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data</a></p>';
+		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_data_csv' );
+		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast data in CSV</a></p>';
 
-        $list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json' );
-        echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data without content</a></p>';
+		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_series_data' );
+		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get all series data</a></p>';
 
-        $list_podcast_file_urls_url = add_query_arg( 'ssa_admin_action', 'get_podcast_files' );
-        echo '<p><a href="' . esc_url( $list_podcast_file_urls_url ) . '">Get all podcast files</a></p>';
-
-        $list_podcast_credentials_url = add_query_arg( 'ssa_admin_action', 'get_podcast_credentials' );
-        echo '<p><a href="' . esc_url( $list_podcast_credentials_url ) . '">Get podcast credentials</a></p>';
-
-        $list_podcast_json_via_query_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json_via_query' );
-        echo '<p><a href="' . esc_url( $list_podcast_json_via_query_url ) . '">Get all podcast JSON data without content (custom query)</a></p>';
-
-        $list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids' );
-        echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids</a></p>';
-
-        $list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_ids_csv' );
-        echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast ids in CSV</a></p>';
-
-        $list_series_url = add_query_arg( 'ssa_admin_action', 'get_series_data' );
-        echo '<p><a href="' . esc_url( $list_series_url ) . '">Get all series data</a></p>';
-
-        $list_series_url = add_query_arg( 'ssa_admin_action', 'get_episode_ids_by_series' );
-        echo '<p><a href="' . esc_url( $list_series_url ) . '">Get Episode IDs by Series</a></p>';
-
-        $list_series_url = add_query_arg( 'ssa_admin_action', 'get_all_episodes' );
-        echo '<p><a href="' . esc_url( $list_series_url ) . '">Get All Episodes CSV</a></p>';
+		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_episode_ids_by_series' );
+		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get Episode IDs by Series</a></p>';
 
 		$delete_castos_post_meta_url = add_query_arg( 'ssa_admin_action', 'delete_castos_post_meta' );
 		echo '<p><a href="' . esc_url( $delete_castos_post_meta_url ) . '">Delete Episode Postmeta</a></p>';
 
-        $action_url = add_query_arg( 'ssa_admin_action', 'ssa_custom_function' );
-        echo '<p><a href="' . esc_url( $action_url ) . '">Run Custom Function</a></p>';
+		$get_pod_press_json_url = add_query_arg( 'ssa_admin_action', 'get_podpress_json' );
+		echo '<p><a href="' . esc_url( $get_pod_press_json_url ) . '">Get PodPress Data</a></p>';
 
-        if ( 'production' === $ssp_admin_podcast_environment ) {
-            $set_ssp_podcast_environment_url = add_query_arg( array(
-                'ssa_admin_action' => 'set_ssp_podcast_environment',
-                'environment'      => 'staging',
-            ) );
-            echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
-        }
+		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_data_csv' );
+		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast data in CSV</a></p>';
 
-        if ( 'staging' === $ssp_admin_podcast_environment ) {
-            $set_ssp_podcast_environment_url = add_query_arg( array(
-                'ssa_admin_action' => 'set_ssp_podcast_environment',
-                'environment'      => 'production',
-            ) );
-            echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
-        }
+		$action_url = add_query_arg( 'ssa_admin_action', 'get_episode_data_with_castos_ids' );
+		echo '<p><a href="' . esc_url( $action_url ) . '">Get Episodes with Castos IDS</a></p>';
+
+		$action_url = add_query_arg( 'ssa_admin_action', 'ssa_custom_function' );
+		echo '<p><a href="' . esc_url( $action_url ) . '">Run Custom Function</a></p>';
+
+		if ( 'production' === $ssp_admin_podcast_environment ) {
+			$set_ssp_podcast_environment_url = add_query_arg( array(
+				'ssa_admin_action' => 'set_ssp_podcast_environment',
+				'environment'      => 'staging',
+			) );
+			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
+		}
+
+		if ( 'staging' === $ssp_admin_podcast_environment ) {
+			$set_ssp_podcast_environment_url = add_query_arg( array(
+				'ssa_admin_action' => 'set_ssp_podcast_environment',
+				'environment'      => 'production',
+			) );
+			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
+		}
 
 		echo '</div>';
 	}
 }
 
-function ssa_reset_episodes() {
-	global $wpdb;
-	$postmeta = $wpdb->prefix . 'postmeta';
-
-	// clear out ssh episode id.
-	$sql = "DELETE FROM `$postmeta` WHERE `meta_key` = 'podmotor_episode_id'";
-	$wpdb->query( $sql );
-	$wpdb->flush();
-}
-
-function ssa_reset_import() {
-	delete_option( 'ss_podcasting_podmotor_import_podcasts' );
-	delete_option( 'ss_podcasting_podmotor_queue_id' );
-}
-
-function ssa_reset_account_details() {
-	delete_option( 'ss_podcasting_podmotor_account_email' );
-	delete_option( 'ss_podcasting_podmotor_account_api_token' );
-	delete_option( 'ss_podcasting_podmotor_account_id' );
-}
-
-function ssa_get_podcast_json() {
-	$podcast_post_types = ssp_post_types( true );
-	$args               = array(
-		'post_type'      => $podcast_post_types,
-		'posts_per_page' => - 1,
-		'post_status'    => 'any',
-		'orderby'        => 'post_date',
-		'order'          => 'DESC',
-		'meta_query'     => array(
-			'relation' => 'OR',
-			array(
-				'key'     => 'audio_file',
-				'compare' => 'EXISTS',
-			),
-			array(
-				'key'     => 'audio_file',
-				'value'   => '',
-				'compare' => '!=',
-			)
-		),
-	);
-	$podcast_query      = new WP_Query( $args );
-	$podcasts           = $podcast_query->get_posts();
-
-	$podcast_data = array();
-	foreach ( $podcasts as $podcast ) {
-		$podcast_data[ $podcast->ID ] = array(
-			'post_id'      => $podcast->ID,
-			'post_title'   => $podcast->post_title,
-			'post_content' => $podcast->post_content,
-			'post_date'    => $podcast->post_date,
-			'audio_file'   => get_post_meta( $podcast->ID, 'audio_file', true ),
-		);
-	}
-	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_data, JSON_PRETTY_PRINT ) );
-	echo '</textarea>';
-}
-
-function ssa_get_safe_podcast_json() {
-	$podcast_post_types = ssp_post_types( true );
-	$args               = array(
-		'post_type'      => $podcast_post_types,
-		'posts_per_page' => - 1,
-		'post_status'    => 'any',
-		'orderby'        => 'post_date',
-		'order'          => 'DESC',
-		'meta_query'     => array(
-			'relation' => 'OR',
-			array(
-				'key'     => 'audio_file',
-				'compare' => 'EXISTS',
-			),
-			array(
-				'key'     => 'audio_file',
-				'value'   => '',
-				'compare' => '!=',
-			)
-		),
-	);
-	$podcast_query      = new WP_Query( $args );
-	$podcasts           = $podcast_query->get_posts();
-
-	$podcast_data = array();
-	foreach ( $podcasts as $podcast ) {
-		$podcast_data[ $podcast->ID ] = array(
-			'post_id'      => $podcast->ID,
-			'post_title'   => $podcast->post_title,
-			'post_content' => '',
-			'post_date'    => $podcast->post_date,
-			'audio_file'   => get_post_meta( $podcast->ID, 'audio_file', true ),
-		);
-	}
-	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_data, JSON_PRETTY_PRINT ) );
-	echo '</textarea>';
-}
-
-function ssa_get_podcast_files() {
-	$podcast_post_types = ssp_post_types( true );
-	$args               = [
-		'post_type'      => $podcast_post_types,
-		'posts_per_page' => - 1,
-		'post_status'    => 'any',
-		'orderby'        => 'post_date',
-		'order'          => 'DESC',
-		'meta_query'     => [
-			'relation' => 'OR',
-			[
-				'key'     => 'audio_file',
-				'compare' => 'EXISTS',
-			],
-			[
-				'key'     => 'audio_file',
-				'value'   => '',
-				'compare' => '!=',
-			],
-		],
-	];
-	$podcast_query      = new WP_Query( $args );
-	$podcasts           = $podcast_query->get_posts();
-
-	$podcast_file_data = [];
-	foreach ( $podcasts as $podcast ) {
-		$podcast_file_data[ $podcast->ID ] = [
-			'post_id'    => $podcast->ID,
-			'post_title' => $podcast->post_title,
-			'post_date'  => $podcast->post_date,
-			'audio_file' => get_post_meta( $podcast->ID, 'audio_file', true ),
-		];
-	}
-
-	echo '<div style="background: #fff; border: 1px solid #ccc; padding: 10px;"><pre>';
-	print_r( $podcast_file_data );
-	echo '</pre></div>';
-}
-
-function ssa_get_podcast_credentials() {
-	$podmotor_account_id    = get_option( 'ss_podcasting_podmotor_account_id', '' );
-	$podmotor_account_email = get_option( 'ss_podcasting_podmotor_account_email', '' );
-	$podmotor_array         = ssp_podmotor_decrypt_config( $podmotor_account_id, $podmotor_account_email );
-
-	echo '<div style="background: #fff; border: 1px solid #ccc; padding: 10px;"><pre>';
-	print_r( array( $podmotor_account_id, $podmotor_account_email, $podmotor_array ) );
-	echo '</pre></div>';
-}
-
-function ssa_get_safe_podcast_json_via_query() {
-
-	global $wpdb;
-	$posts    = $wpdb->prefix . 'posts';
-	$postmeta = $wpdb->prefix . 'postmeta';
-
-	$sql     = "SELECT posts.ID, posts.post_title, posts.post_date, postmeta.meta_value as audio_file
-			FROM $posts as posts
-			LEFT JOIN $postmeta as postmeta
-			ON posts.ID = postmeta.post_id
-			WHERE posts.post_type = 'podcast'
-			AND postmeta.meta_key = 'audio_file'
-			AND postmeta.meta_value != ''
-			ORDER BY posts.post_date DESC";
-	$results = $wpdb->get_results( $sql, ARRAY_A );
-
-	$podcast_data = array();
-	foreach ( $results as $result ) {
-		$podcast_data[ $result['ID'] ] = array(
-			'post_id'      => $result['ID'],
-			'post_title'   => $result['post_title'],
-			'post_content' => '',
-			'post_date'    => $result['post_date'],
-			'audio_file'   => $result['audio_file'],
-		);
-	}
-
-	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_data, JSON_PRETTY_PRINT ) );
-	echo '</textarea>';
-}
-
-function ssa_get_podcast_ids() {
-	$podcast_post_types = ssp_post_types( true );
-	$args               = array(
-		'post_type'      => $podcast_post_types,
-		'posts_per_page' => - 1,
-		'post_status'    => 'any',
-		'orderby'        => 'post_date',
-		'order'          => 'DESC',
-		'meta_query'     => array(
-			'relation' => 'OR',
-			array(
-				'key'     => 'audio_file',
-				'compare' => 'EXISTS',
-			),
-			array(
-				'key'     => 'audio_file',
-				'value'   => '',
-				'compare' => '!=',
-			),
-		),
-	);
-	$podcast_query      = new WP_Query( $args );
-	$podcasts           = $podcast_query->get_posts();
-
-	$podcast_file_data = array();
-	foreach ( $podcasts as $podcast ) {
-		$podcast_file_data[ $podcast->ID ] = [
-			'post_id'    => $podcast->ID,
-			'post_title' => $podcast->post_title,
-			'post_date'  => $podcast->post_date,
-			'audio_file' => get_post_meta( $podcast->ID, 'audio_file', true ),
-			'enclosure'  => get_post_meta( $podcast->ID, 'enclosure', true ),
-		];
-	}
-
-	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_file_data, JSON_PRETTY_PRINT ) );
-	echo '</textarea>';
-}
-
-function ssa_get_podcast_ids_csv() {
-	$podcast_post_types = ssp_post_types( true );
-	$args               = array(
-		'post_type'      => $podcast_post_types,
-		'posts_per_page' => - 1,
-		'post_status'    => 'any',
-		'orderby'        => 'post_date',
-		'order'          => 'DESC',
-		'meta_query'     => array(
-			'relation' => 'OR',
-			array(
-				'key'     => 'audio_file',
-				'compare' => 'EXISTS',
-			),
-			array(
-				'key'     => 'audio_file',
-				'value'   => '',
-				'compare' => '!=',
-			),
-		),
-	);
-	$podcast_query      = new WP_Query( $args );
-	$podcasts           = $podcast_query->get_posts();
-
-	$podcast_file_data = array();
-	foreach ( $podcasts as $podcast ) {
-		$audio_file = get_post_meta( $podcast->ID, 'audio_file', true );
-		if ( empty( $audio_file ) ) {
-			continue;
-		}
-		$podcast_file_data[ $podcast->ID ] = [
-			'post_id'    => $podcast->ID,
-			'post_title' => $podcast->post_title,
-			'post_date'  => $podcast->post_date,
-			'audio_file' => get_post_meta( $podcast->ID, 'audio_file', true ),
-			'enclosure'  => get_post_meta( $podcast->ID, 'enclosure', true ),
-			'episode_id' => $podcast->episode_id,
-		];
-	}
-
-	$csv = '';
-	foreach ( $podcast_file_data as $podcast_file_data_item ) {
-		$csv .= implode( ';', $podcast_file_data_item ) . PHP_EOL;
-	}
-
-	echo '<textarea cols="200" rows="25">';
-	print_r( $csv );
-	echo '</textarea>';
-}
-
-function ssa_get_series_data() {
-	$terms = get_terms(array(
-		'taxonomy' => 'series',
-		'hide_empty' => false,
-	));
-	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $terms, JSON_PRETTY_PRINT ) );
-	echo '</textarea>';
-}
-
-function ssa_get_episode_ids_by_series() {
-	global $wpdb;
-	$term_relationships = $wpdb->prefix . 'term_relationships';
-	$term_taxonomy      = $wpdb->prefix . 'term_taxonomy';
-
-	$sql     = "SELECT term_taxonomy.term_id AS series_id, term_relationships.object_id AS post_id
-			FROM $term_relationships AS term_relationships
-			LEFT join $term_taxonomy AS term_taxonomy
-			ON term_relationships.term_taxonomy_id = term_taxonomy.term_taxonomy_id
-			WHERE term_taxonomy.taxonomy = 'series' ORDER BY series_id";
-	$results = $wpdb->get_results( $sql, ARRAY_A );
-
-	$podcast_ids_by_series = array();
-	foreach ( $results as $result ) {
-		if ( ! empty( $podcast_ids_by_series[ $result['series_id'] ] ) ) {
-			$podcast_ids_by_series[ $result['series_id'] ] .= ',';
-		}
-		$podcast_ids_by_series[ $result['series_id'] ] .= $result['post_id'];
-	}
-	echo '<textarea cols="200" rows="25">';
-	print_r( wp_json_encode( $podcast_ids_by_series, JSON_PRETTY_PRINT ) );
-	echo '</textarea>';
-}
-
-function get_all_episodes(){
-	$podcast_post_types = ssp_post_types( true );
-	$args               = array(
-		'post_type'      => $podcast_post_types,
-		'posts_per_page' => - 1,
-		'post_status'    => 'any',
-		'orderby'        => 'post_date',
-		'order'          => 'DESC',
-	);
-	$podcast_query      = new WP_Query( $args );
-	$podcasts           = $podcast_query->get_posts();
-
-	$podcast_file_data = array();
-	foreach ( $podcasts as $podcast ) {
-		$terms                             = get_the_terms( $podcast->ID, 'series' );
-		$podcast_file_data[ $podcast->ID ] = [
-			'post_id'    => $podcast->ID,
-			'post_title' => $podcast->post_title,
-			'post_date'  => $podcast->post_date,
-			'audio_file' => get_post_meta( $podcast->ID, 'audio_file', true ),
-			'episode_id' => get_post_meta( $podcast->ID, 'podmotor_episode_id', true ),
-			'file_id'    => get_post_meta( $podcast->ID, 'podmotor_file_id', true ),
-			'series_id'  => $terms[0]->term_id,
-		];
-	}
-
-	$csv = '';
-	foreach ( $podcast_file_data as $podcast_file_data_item ) {
-		$csv .= implode( ';', $podcast_file_data_item ) . PHP_EOL;
-	}
-
-	echo '<textarea cols="200" rows="25">';
-	print_r( $csv );
-	echo '</textarea>';
-}
-
-
-function ssa_set_podcast_environment() {
-	$environment = filter_var( $_GET['environment'], FILTER_SANITIZE_STRING );
-	update_option( 'ssp_admin_podcast_environment', $environment );
-}
-
-function delete_castos_post_meta() {
-	$podcast_post_types = ssp_post_types( true );
-	$args               = array(
-		'post_type'      => $podcast_post_types,
-		'posts_per_page' => - 1,
-		'post_status'    => 'any',
-		'orderby'        => 'post_date',
-		'order'          => 'DESC',
-	);
-	$podcast_query      = new WP_Query( $args );
-	$podcasts           = $podcast_query->get_posts();
-
-	foreach ( $podcasts as $podcast ) {
-		delete_post_meta( $podcast->ID, 'podmotor_episode_id' );
-		delete_post_meta( $podcast->ID, 'podmotor_file_id' );
-	}
-}
+require_once 'ssa-admin-functions.php';
 
 require_once 'ssa-custom-function.php';
