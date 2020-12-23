@@ -20,13 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( ! defined( 'SSP_DEBUG' ) ) {
-	define( 'SSP_DEBUG', true );
-}
-if ( ! defined( 'SCRIPT_DEBUG' ) ) {
-	define( 'SCRIPT_DEBUG', true );
-}
-
 /**
  * If environment setting has changed
  */
@@ -57,6 +50,12 @@ if ( 'local' === $ssp_admin_podcast_environment ) {
 	}
 	if ( ! defined( 'SSP_CASTOS_EPISODES_URL' ) ) {
 		define( 'SSP_CASTOS_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
+	}
+	if ( ! defined( 'SSP_DEBUG' ) ) {
+		define( 'SSP_DEBUG', true );
+	}
+	if ( ! defined( 'SCRIPT_DEBUG' ) ) {
+		define( 'SCRIPT_DEBUG', true );
 	}
 }
 
