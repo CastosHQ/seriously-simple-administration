@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.2.9
+ * Version: 1.2.10
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
@@ -18,6 +18,16 @@
  */
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
+}
+
+/**
+ * Turn on script debugging, and the SSP debug logging
+ */
+if ( ! defined( 'SCRIPT_DEBUG' ) ) {
+	define( 'SCRIPT_DEBUG', true );
+}
+if ( ! defined( 'SSP_DEBUG' ) ) {
+	define( 'SSP_DEBUG', true );
 }
 
 /**
@@ -50,12 +60,6 @@ if ( 'local' === $ssp_admin_podcast_environment ) {
 	}
 	if ( ! defined( 'SSP_CASTOS_EPISODES_URL' ) ) {
 		define( 'SSP_CASTOS_EPISODES_URL', 'https://s3.amazonaws.com/seriouslysimplestaging/' );
-	}
-	if ( ! defined( 'SSP_DEBUG' ) ) {
-		define( 'SSP_DEBUG', true );
-	}
-	if ( ! defined( 'SCRIPT_DEBUG' ) ) {
-		define( 'SCRIPT_DEBUG', true );
 	}
 }
 
