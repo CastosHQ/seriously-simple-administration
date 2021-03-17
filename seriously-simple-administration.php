@@ -1,11 +1,11 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.2.10
+ * Version: 1.3.0
  * Plugin URI: http://jonathanbossenger.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
- * Author: Jonathan Bossenger
- * Author URI: http://jonathanbossenger.com/
+ * Author: Jonathan Bossenger, Sergey Zakharchenko
+ * Author URI: http://jonathanbossenger.com/, https://github.com/zahardev
  * Requires at least: 4.0
  * Tested up to: 4.0
  *
@@ -16,9 +16,15 @@
  * @author Jonathan Bossenger
  * @since 1.0.0
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+use SSA\SSA;
+
+require_once 'ssa-admin-functions.php';
+require_once 'ssa-custom-function.php';
 
 /**
  * Turn on script debugging, and the SSP debug logging
@@ -36,7 +42,7 @@ if ( ! defined( 'SSP_DEBUG' ) ) {
 if ( isset( $_GET['ssa_admin_action'] ) ) {
 	$admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
 	if ( 'set_ssp_podcast_environment' === $admin_action ) {
-		ssa_set_podcast_environment();
+		SSA::ssa_set_podcast_environment();
 	}
 }
 
@@ -113,38 +119,38 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 
 			switch ( $admin_action ) {
 				case 'reset_all':
-					ssa_reset_episodes();
-					ssa_reset_import();
-					ssa_reset_account_details();
+					SSA::ssa_reset_episodes();
+					SSA::ssa_reset_import();
+					SSA::ssa_reset_account_details();
 					echo '<p>Database settings reset.</p>';
 					break;
 				case 'reset_import':
-					ssa_reset_import();
+					SSA::ssa_reset_import();
 					echo '<p>Import setting reset.</p>';
 					break;
 				case 'get_safe_podcast_json':
-					ssa_get_safe_podcast_json();
+					SSA::ssa_get_safe_podcast_json();
 					break;
 				case 'get_podcast_data_csv':
-					ssa_get_podcast_data_csv();
+					SSA::ssa_get_podcast_data_csv();
 					break;
 				case 'get_series_data':
-					ssa_get_series_data();
+					SSA::ssa_get_series_data();
 					break;
 				case 'set_ssp_podcast_environment':
-					ssa_set_podcast_environment();
+					SSA::ssa_set_podcast_environment();
 					break;
 				case 'get_episode_ids_by_series':
-					ssa_get_episode_ids_by_series();
+					SSA::ssa_get_episode_ids_by_series();
 					break;
 				case 'delete_castos_post_meta':
-					delete_castos_post_meta();
+					SSA::delete_castos_post_meta();
 					break;
 				case 'get_podpress_json':
-					ssa_get_podpress_json();
+					SSA::ssa_get_podpress_json();
 					break;
 				case 'get_episode_data_with_castos_ids':
-					ssa_get_episode_data_with_castos_ids();
+					SSA::ssa_get_episode_data_with_castos_ids();
 					break;
 				case 'ssa_custom_function':
 					ssa_custom_function();
@@ -210,7 +216,3 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 		echo '</div>';
 	}
 }
-
-require_once 'ssa-admin-functions.php';
-
-require_once 'ssa-custom-function.php';
