@@ -7,6 +7,15 @@ use WP_Query;
 class SSA {
 
 	/**
+	 * Export podcasts which were skipped for some reason
+	 * */
+	public static function export_missed_episodes() {
+		$limit = filter_input( INPUT_GET, 'limit' );
+		$limit = $limit ? $limit : 10;
+		Castos_Exporter::export_missed_episodes_with_file_id( $limit );
+	}
+
+	/**
 	 * Delete all Castos Episode IDS
 	 */
 	public static function ssa_reset_episodes() {
