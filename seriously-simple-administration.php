@@ -2,12 +2,12 @@
 /*
  * Plugin Name: Seriously Simple Administration
  * Version: 1.3.0
- * Plugin URI: http://jonathanbossenger.com/
+ * Plugin URI: https://www.castos.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
- * Author: Jonathan Bossenger, Sergey Zakharchenko
- * Author URI: http://jonathanbossenger.com/, https://github.com/zahardev
+ * Author: Jonathan Bossenger
+ * Author URI: http://jonathanbossenger.com/
  * Requires at least: 4.0
- * Tested up to: 4.0
+ * Tested up to: 5.7.0
  *
  * Text Domain: seriously-simple-admin
  * Domain Path: /lang/
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use SSA\SSA;
 
 require_once 'class-castos-exporter.php';
-require_once 'ssa-admin-functions.php';
+require_once 'class-ssa.php';
 require_once 'ssa-custom-function.php';
 
 /**
@@ -193,6 +193,11 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 	}
 }
 
+/**
+ * Get admin actions
+ *
+ * @since 1.3.0
+ * */
 if ( ! function_exists( 'ssa_get_admin_actions' ) ) {
 	function ssa_get_admin_actions() {
 		return array(
