@@ -1,13 +1,13 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.2.10
- * Plugin URI: http://jonathanbossenger.com/
+ * Version: 1.3.0
+ * Plugin URI: https://www.castos.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger
  * Author URI: http://jonathanbossenger.com/
  * Requires at least: 4.0
- * Tested up to: 4.0
+ * Tested up to: 5.7.0
  *
  * Text Domain: seriously-simple-admin
  * Domain Path: /lang/
@@ -16,9 +16,16 @@
  * @author Jonathan Bossenger
  * @since 1.0.0
  */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
+
+use SSA\SSA;
+
+require_once 'class-castos-exporter.php';
+require_once 'class-ssa.php';
+require_once 'ssa-custom-function.php';
 
 /**
  * Turn on script debugging, and the SSP debug logging
@@ -36,7 +43,7 @@ if ( ! defined( 'SSP_DEBUG' ) ) {
 if ( isset( $_GET['ssa_admin_action'] ) ) {
 	$admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
 	if ( 'set_ssp_podcast_environment' === $admin_action ) {
-		ssa_set_podcast_environment();
+		SSA::ssa_set_podcast_environment();
 	}
 }
 
@@ -113,38 +120,41 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 
 			switch ( $admin_action ) {
 				case 'reset_all':
-					ssa_reset_episodes();
-					ssa_reset_import();
-					ssa_reset_account_details();
+					SSA::ssa_reset_episodes();
+					SSA::ssa_reset_import();
+					SSA::ssa_reset_account_details();
 					echo '<p>Database settings reset.</p>';
 					break;
 				case 'reset_import':
-					ssa_reset_import();
+					SSA::ssa_reset_import();
 					echo '<p>Import setting reset.</p>';
 					break;
 				case 'get_safe_podcast_json':
-					ssa_get_safe_podcast_json();
+					SSA::ssa_get_safe_podcast_json();
 					break;
 				case 'get_podcast_data_csv':
-					ssa_get_podcast_data_csv();
+					SSA::ssa_get_podcast_data_csv();
 					break;
 				case 'get_series_data':
-					ssa_get_series_data();
+					SSA::ssa_get_series_data();
 					break;
 				case 'set_ssp_podcast_environment':
-					ssa_set_podcast_environment();
+					SSA::ssa_set_podcast_environment();
 					break;
 				case 'get_episode_ids_by_series':
-					ssa_get_episode_ids_by_series();
+					SSA::ssa_get_episode_ids_by_series();
 					break;
 				case 'delete_castos_post_meta':
-					delete_castos_post_meta();
+					SSA::delete_castos_post_meta();
 					break;
 				case 'get_podpress_json':
-					ssa_get_podpress_json();
+					SSA::ssa_get_podpress_json();
 					break;
 				case 'get_episode_data_with_castos_ids':
-					ssa_get_episode_data_with_castos_ids();
+					SSA::ssa_get_episode_data_with_castos_ids();
+					break;
+				case 'ssa_export_missed_episodes':
+					SSA::export_missed_episodes();
 					break;
 				case 'ssa_custom_function':
 					ssa_custom_function();
@@ -152,44 +162,11 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			}
 		}
 
-		$reset_all_settings_url = add_query_arg( 'ssa_admin_action', 'reset_all' );
-		echo '<p><a href="' . esc_url( $reset_all_settings_url ) . '">Reset all database settings</a></p>';
-
-		$reset_import_podcasts_url = add_query_arg( 'ssa_admin_action', 'reset_import' );
-		echo '<p><a href="' . esc_url( $reset_import_podcasts_url ) . '">Reset importer</a></p>';
-
 		$log_path = SSP_PLUGIN_PATH . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
 		$log_url  = SSP_PLUGIN_URL . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
 		if ( is_file( $log_path ) ) {
 			echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
 		}
-
-		$list_podcast_json_url = add_query_arg( 'ssa_admin_action', 'get_safe_podcast_json' );
-		echo '<p><a href="' . esc_url( $list_podcast_json_url ) . '">Get all podcast JSON data without content</a></p>';
-
-		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_data_csv' );
-		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast data in CSV</a></p>';
-
-		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_series_data' );
-		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get all series data</a></p>';
-
-		$list_series_url = add_query_arg( 'ssa_admin_action', 'get_episode_ids_by_series' );
-		echo '<p><a href="' . esc_url( $list_series_url ) . '">Get Episode IDs by Series</a></p>';
-
-		$delete_castos_post_meta_url = add_query_arg( 'ssa_admin_action', 'delete_castos_post_meta' );
-		echo '<p><a href="' . esc_url( $delete_castos_post_meta_url ) . '">Delete Episode Postmeta</a></p>';
-
-		$get_pod_press_json_url = add_query_arg( 'ssa_admin_action', 'get_podpress_json' );
-		echo '<p><a href="' . esc_url( $get_pod_press_json_url ) . '">Get PodPress Data</a></p>';
-
-		$list_podcast_ids_url = add_query_arg( 'ssa_admin_action', 'get_podcast_data_csv' );
-		echo '<p><a href="' . esc_url( $list_podcast_ids_url ) . '">Get all podcast data in CSV</a></p>';
-
-		$action_url = add_query_arg( 'ssa_admin_action', 'get_episode_data_with_castos_ids' );
-		echo '<p><a href="' . esc_url( $action_url ) . '">Get Episodes with Castos IDS</a></p>';
-
-		$action_url = add_query_arg( 'ssa_admin_action', 'ssa_custom_function' );
-		echo '<p><a href="' . esc_url( $action_url ) . '">Run Custom Function</a></p>';
 
 		if ( 'production' === $ssp_admin_podcast_environment ) {
 			$set_ssp_podcast_environment_url = add_query_arg( array(
@@ -207,10 +184,34 @@ if ( ! function_exists( 'ssa_setup_development_settings' ) ) {
 			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
 		}
 
+		foreach ( ssa_get_admin_actions() as $action => $title ) {
+			$action_url = add_query_arg( 'ssa_admin_action', $action );
+			echo '<p><a href="' . esc_url( $action_url ) . '">' . $title . '</a></p>';
+		}
+
 		echo '</div>';
 	}
 }
 
-require_once 'ssa-admin-functions.php';
-
-require_once 'ssa-custom-function.php';
+/**
+ * Get admin actions
+ *
+ * @since 1.3.0
+ * */
+if ( ! function_exists( 'ssa_get_admin_actions' ) ) {
+	function ssa_get_admin_actions() {
+		return array(
+			'reset_all'                        => 'Reset all database settings',
+			'reset_import'                     => 'Reset importer',
+			'get_safe_podcast_json'            => 'Get all podcast JSON data without content',
+			'get_podcast_data_csv'             => 'Get all podcast data in CSV',
+			'get_series_data'                  => 'Get all series data',
+			'get_episode_ids_by_series'        => 'Get Episode IDs by Series',
+			'delete_castos_post_meta'          => 'Delete Episode Postmeta',
+			'get_podpress_json'                => 'Get PodPress Data',
+			'get_episode_data_with_castos_ids' => 'Get Episodes with Castos IDS',
+			'ssa_custom_function'              => 'Run Custom Function',
+			'ssa_export_missed_episodes'       => 'Export missed episodes',
+		);
+	}
+}
