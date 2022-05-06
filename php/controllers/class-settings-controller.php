@@ -32,7 +32,7 @@ class Settings_Controller extends Abstract_Controller {
 
 		$ssp_admin_podcast_environment = get_option( 'ssp_admin_podcast_environment', 'production' );
 
-		echo '<div class="wrap">';
+		echo '<div class="wrap ssa-settings">';
 		echo '<h1>Admin settings</h1>';
 
 		self::show_notice(
@@ -87,7 +87,7 @@ class Settings_Controller extends Abstract_Controller {
 		$log_path = SSP_PLUGIN_PATH . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
 		$log_url  = SSP_PLUGIN_URL . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
 		if ( is_file( $log_path ) ) {
-			echo '<p><a href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
+			echo '<p><a class="button" href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
 		}
 
 		if ( 'production' === $ssp_admin_podcast_environment ) {
@@ -95,7 +95,7 @@ class Settings_Controller extends Abstract_Controller {
 				'ssa_admin_action' => 'set_ssp_podcast_environment',
 				'environment'      => 'staging',
 			) );
-			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
+			echo '<p><a class="button" href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
 		}
 
 		if ( 'staging' === $ssp_admin_podcast_environment ) {
@@ -103,15 +103,32 @@ class Settings_Controller extends Abstract_Controller {
 				'ssa_admin_action' => 'set_ssp_podcast_environment',
 				'environment'      => 'production',
 			) );
-			echo '<p><a href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
+			echo '<p><a class="button" href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
 		}
 
 		foreach ( $this->get_admin_actions() as $action => $title ) {
 			$action_url = add_query_arg( 'ssa_admin_action', $action );
-			echo '<p><a href="' . esc_url( $action_url ) . '">' . $title . '</a></p>';
+			echo '<p><a class="button" href="' . esc_url( $action_url ) . '">' . $title . '</a></p>';
 		}
 
 		echo '</div>';
+
+		$this->activate_action_warning();
+	}
+
+	protected function activate_action_warning() {
+		?>
+        <script>
+            jQuery(document).ready(function ($) {
+                $('.ssa-settings').find('.button').click(function (e) {
+                    if (!confirm('Are you sure?')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+            });
+        </script>
+		<?php
 	}
 
 	/**
