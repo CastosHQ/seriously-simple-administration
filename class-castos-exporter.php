@@ -27,7 +27,7 @@ class Castos_Exporter {
 			}
 
 			foreach ( $posts as $post ) {
-				$response = $castos_handler->upload_podcast_to_podmotor( $post );
+				$response = $castos_handler->upload_episode_to_castos( $post );
 
 				$type = ( 'success' === $response['status'] && ! empty( $response['episode_id'] ) ) ? 'success' : 'error';
 
