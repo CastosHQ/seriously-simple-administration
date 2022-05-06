@@ -79,9 +79,6 @@ class Settings_Controller extends Abstract_Controller {
 				case 'ssa_export_missed_episodes':
 					SSP_Admin::export_missed_episodes();
 					break;
-				case 'ssa_custom_function':
-					SSP_Admin::custom_function();
-					break;
 			}
 		}
 
