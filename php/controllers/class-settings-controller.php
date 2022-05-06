@@ -153,7 +153,6 @@ class Settings_Controller extends Abstract_Controller {
 			'delete_castos_post_meta'          => 'Delete Episode Postmeta',
 			'get_podpress_json'                => 'Get PodPress Data',
 			'get_episode_data_with_castos_ids' => 'Get Episodes with Castos IDS',
-			'ssa_custom_function'              => 'Run Custom Function',
 			'ssa_export_missed_episodes'       => 'Export missed episodes',
 		);
 	}
