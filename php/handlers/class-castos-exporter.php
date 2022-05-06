@@ -1,6 +1,6 @@
 <?php
 
-namespace SSA;
+namespace SSA\Handlers;
 
 use SeriouslySimplePodcasting\Handlers\Castos_Handler;
 
@@ -16,10 +16,15 @@ class Castos_Exporter {
 	 */
 	public static function export_missed_episodes_with_file_id( $max = 10 ) {
 		try {
-			self::show_notice('Exporting missed episodes containing file id');
+			self::show_notice( 'Exporting missed episodes containing file id' );
 			self::check_connection();
 
 			$posts = self::get_podcasts_with_file_id( $max );
+
+			if ( ! class_exists( 'SeriouslySimplePodcasting\Handlers\Castos_Handler' ) ) {
+				throw new \Exception( 'Error: could not find class Castos_Handler!' );
+			}
+
 			$castos_handler = new Castos_Handler();
 
 			if ( empty( $posts ) ) {
@@ -37,7 +42,7 @@ class Castos_Exporter {
 				self::show_notice( sprintf( 'Post %s: %s', $post->ID, $response['message'] ), $type );
 			}
 
-		} catch (\Exception $e) {
+		} catch ( \Exception $e ) {
 			self::show_notice( $e->getMessage(), 'error' );
 		}
 	}
@@ -76,9 +81,9 @@ class Castos_Exporter {
 	protected static function show_notice( $notice, $type = 'success' ) {
 		$type = in_array( $type, array( 'success', 'error' ) ) ? $type : 'success';
 		?>
-		<div class="notice notice-<?php echo $type; ?> is-dismissible">
-			<p><?php _e( $notice ); ?></p>
-		</div>
+        <div class="notice notice-<?php echo $type; ?> is-dismissible">
+            <p><?php _e( $notice ); ?></p>
+        </div>
 		<?php
 	}
 

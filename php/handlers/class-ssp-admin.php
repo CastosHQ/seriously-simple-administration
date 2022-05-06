@@ -1,10 +1,10 @@
 <?php
 
-namespace SSA;
+namespace SSA\Handlers;
 
 use WP_Query;
 
-class SSA {
+class SSP_Admin {
 
 	/**
 	 * Export podcasts which were skipped for some reason
@@ -323,5 +323,15 @@ class SSA {
 		print_r( $csv );
 		echo '</textarea>';
 
+	}
+
+	public static function custom_function() {
+		$episode_ids = array();
+		foreach ( $episode_ids as $episode ) {
+			update_post_meta( $episode['ID'], 'podmotor_episode_id', $episode['podmotor_episode_id'] );
+			update_post_meta( $episode['ID'], 'podmotor_file_id', $episode['podmotor_file_id'] );
+			echo 'Episode ID ' . $episode['ID'] . ' updated</br>';
+		}
+		echo '<p>Complete</p>';
 	}
 }
