@@ -3,6 +3,7 @@
 namespace SSA\Controllers;
 
 
+use SSA\Handlers\Notice_Handler;
 use SSA\Handlers\SSP_Admin;
 
 class Settings_Controller extends Abstract_Controller {
@@ -34,9 +35,10 @@ class Settings_Controller extends Abstract_Controller {
 		echo '<div class="wrap">';
 		echo '<h1>Admin settings</h1>';
 
-		echo '<p>' . SSP_CASTOS_APP_URL . '</p>';
-
-		echo '<p>' . ucwords( $ssp_admin_podcast_environment ) . '</p>';
+		self::show_notice(
+			'APP URL: ' . SSP_CASTOS_APP_URL . '<br>ENV: ' . ucwords( $ssp_admin_podcast_environment ),
+			Notice_Handler::TYPE_WARNING, false
+		);
 
 		if ( isset( $_GET['ssa_admin_action'] ) ) {
 			$admin_action = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
@@ -46,11 +48,11 @@ class Settings_Controller extends Abstract_Controller {
 					SSP_Admin::ssa_reset_episodes();
 					SSP_Admin::ssa_reset_import();
 					SSP_Admin::ssa_reset_account_details();
-					echo '<p>Database settings reset.</p>';
+					Notice_Handler::show_notice( 'Database settings reset!' );
 					break;
 				case 'reset_import':
 					SSP_Admin::ssa_reset_import();
-					echo '<p>Import setting reset.</p>';
+					Notice_Handler::show_notice( 'Import settings reset!' );
 					break;
 				case 'get_safe_podcast_json':
 					SSP_Admin::ssa_get_safe_podcast_json();
@@ -110,6 +112,17 @@ class Settings_Controller extends Abstract_Controller {
 		}
 
 		echo '</div>';
+	}
+
+	/**
+	 * @param string $notice
+	 * @param string $type
+	 * @param bool $is_dismissible
+	 *
+	 * @return void
+	 */
+	public function show_notice( $notice, $type = 'success', $is_dismissible = true ) {
+		Notice_Handler::show_notice( $notice, $type, $is_dismissible );
 	}
 
 	public function get_admin_actions() {

@@ -79,12 +79,7 @@ class Castos_Exporter {
 	}
 
 	protected static function show_notice( $notice, $type = 'success' ) {
-		$type = in_array( $type, array( 'success', 'error' ) ) ? $type : 'success';
-		?>
-        <div class="notice notice-<?php echo $type; ?> is-dismissible">
-            <p><?php _e( $notice ); ?></p>
-        </div>
-		<?php
+		Notice_Handler::show_notice( $notice, $type );
 	}
 
 	protected static function check_connection() {
