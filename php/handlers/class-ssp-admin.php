@@ -9,9 +9,23 @@ class SSP_Admin {
 	/**
 	 * Export podcasts which were skipped for some reason
 	 * */
+	public static function ssa_export_all_episodes() {
+		Castos_Exporter::export_all_episodes_with_file_id( false );
+	}
+
+	/**
+	 * Export podcasts which were skipped for some reason
+	 * */
+	public static function ssa_schedule_export_all_episodes() {
+		Castos_Exporter::export_all_episodes_with_file_id();
+	}
+
+	/**
+	 * Export podcasts which were skipped for some reason
+	 * */
 	public static function export_missed_episodes() {
 		$limit = filter_input( INPUT_GET, 'limit' );
-		$limit = $limit ? $limit : 10;
+		$limit = $limit ?: 10;
 		Castos_Exporter::export_missed_episodes_with_file_id( $limit );
 	}
 
