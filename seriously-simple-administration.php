@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 1.3.0
+ * Version: 1.4.0-beta
  * Plugin URI: https://www.castos.com/
  * Description: Basic admin for Seriously Simple Podcasting/Hosting
  * Author: Jonathan Bossenger, Sergio Zakharchenko
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SSA_VERSION', '1.3.0' );
+define( 'SSA_VERSION', '1.4.0-beta' );
 define( 'SSA_PLUGIN_FILE', __FILE__ );
 define( 'SSA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SSA_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
