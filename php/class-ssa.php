@@ -3,7 +3,6 @@
 namespace SSA;
 
 use SSA\Controllers\Env_Controller;
-use SSA\Controllers\Menu_Controller;
 use SSA\Controllers\Plugin_Controller;
 use SSA\Controllers\Settings_Controller;
 use SSA\Handlers\Controllers_Handler;

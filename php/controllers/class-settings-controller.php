@@ -13,7 +13,6 @@ class Settings_Controller extends Abstract_Controller {
 	 * @since   1.4.0
 	 */
 	public function init() {
-		//add_action( 'admin_menu', array( $this, 'setup_development_settings' ) );
 		add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
 	}
 
@@ -157,6 +156,9 @@ class Settings_Controller extends Abstract_Controller {
 		Notice_Handler::show_notice( $notice, $type, $is_dismissible );
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function get_admin_actions() {
 		return array(
 			'reset_all'                        => 'Reset all database settings',

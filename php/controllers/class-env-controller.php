@@ -3,7 +3,7 @@
 namespace SSA\Controllers;
 
 
-use SSA\SSP_Admin;
+use SSA\Handlers\SSP_Admin;
 
 class Env_Controller extends Abstract_Controller {
 
