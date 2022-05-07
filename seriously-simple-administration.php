@@ -3,17 +3,17 @@
  * Plugin Name: Seriously Simple Administration
  * Version: 1.4.0
  * Plugin URI: https://www.castos.com/
- * Description: Basic admin for Seriously Simple Podcasting/Hosting
- * Author: Jonathan Bossenger, Sergio Zakharchenko
- * Author URI: http://jonathanbossenger.com/
- * Requires at least: 4.0
- * Tested up to: 5.7.0
+ * Description: Basic admin for Seriously Simple Podcasting
+ * Author: Castos
+ * Author URI: https://castos.com/
+ * Requires at least: 5.0
+ * Tested up to: 5.9
  *
  * Text Domain: seriously-simple-admin
  * Domain Path: /lang/
  *
  * @package WordPress
- * @author Jonathan Bossenger
+ * @author Jonathan Bossenger, Sergio Zakharchenko
  * @since 1.0.0
  */
 
