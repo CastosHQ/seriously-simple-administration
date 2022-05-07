@@ -81,40 +81,55 @@ class Settings_Controller extends Abstract_Controller {
 				case 'ssa_export_missed_episodes':
 					SSP_Admin::export_missed_episodes();
 					break;
+				case 'ssa_export_all_episodes':
+					SSP_Admin::ssa_export_all_episodes();
+					break;
+				case 'ssa_schedule_export_all_episodes':
+					SSP_Admin::ssa_schedule_export_all_episodes();
+					break;
 			}
-		}
 
-		$log_path = SSP_PLUGIN_PATH . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
-		$log_url  = SSP_PLUGIN_URL . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
-		if ( is_file( $log_path ) ) {
-			echo '<p><a class="button" href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
-		}
+			echo '<p><a class="button" href="' . remove_query_arg('ssa_admin_action') . '"><< Go back</a></p>';
 
-		if ( 'production' === $ssp_admin_podcast_environment ) {
-			$set_ssp_podcast_environment_url = add_query_arg( array(
-				'ssa_admin_action' => 'set_ssp_podcast_environment',
-				'environment'      => 'staging',
-			) );
-			echo '<p><a class="button" href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
-		}
-
-		if ( 'staging' === $ssp_admin_podcast_environment ) {
-			$set_ssp_podcast_environment_url = add_query_arg( array(
-				'ssa_admin_action' => 'set_ssp_podcast_environment',
-				'environment'      => 'production',
-			) );
-			echo '<p><a class="button" href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
-		}
-
-		foreach ( $this->get_admin_actions() as $action => $title ) {
-			$action_url = add_query_arg( 'ssa_admin_action', $action );
-			echo '<p><a class="button" href="' . esc_url( $action_url ) . '">' . $title . '</a></p>';
+        } else {
+			$this->print_action_buttons();
 		}
 
 		echo '</div>';
-
-		$this->activate_action_warning();
 	}
+
+    protected function print_action_buttons(){
+	    $log_path = SSP_PLUGIN_PATH . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
+	    $log_url  = SSP_PLUGIN_URL . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
+	    if ( is_file( $log_path ) ) {
+		    echo '<p><a class="button" href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
+	    }
+
+	    $ssp_admin_podcast_environment = get_option( 'ssp_admin_podcast_environment', 'production' );
+
+	    if ( 'production' === $ssp_admin_podcast_environment ) {
+		    $set_ssp_podcast_environment_url = add_query_arg( array(
+			    'ssa_admin_action' => 'set_ssp_podcast_environment',
+			    'environment'      => 'staging',
+		    ) );
+		    echo '<p><a class="button" href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to staging</a></p>';
+	    }
+
+	    if ( 'staging' === $ssp_admin_podcast_environment ) {
+		    $set_ssp_podcast_environment_url = add_query_arg( array(
+			    'ssa_admin_action' => 'set_ssp_podcast_environment',
+			    'environment'      => 'production',
+		    ) );
+		    echo '<p><a class="button" href="' . esc_url( $set_ssp_podcast_environment_url ) . '">Set podcast environment to production</a></p>';
+	    }
+
+	    foreach ( $this->get_admin_actions() as $action => $title ) {
+		    $action_url = add_query_arg( 'ssa_admin_action', $action );
+		    echo '<p><a class="button" href="' . esc_url( $action_url ) . '">' . $title . '</a></p>';
+	    }
+
+	    $this->activate_action_warning();
+    }
 
 	protected function activate_action_warning() {
 		?>
@@ -153,7 +168,9 @@ class Settings_Controller extends Abstract_Controller {
 			'delete_castos_post_meta'          => 'Delete Episode Postmeta',
 			'get_podpress_json'                => 'Get PodPress Data',
 			'get_episode_data_with_castos_ids' => 'Get Episodes with Castos IDS',
-			'ssa_export_missed_episodes'       => 'Export missed episodes',
+			'ssa_export_missed_episodes'       => 'Export MISSED episodes',
+			'ssa_export_all_episodes'          => 'Export ALL episodes (up to 100)',
+			'ssa_schedule_export_all_episodes' => 'Schedule Export ALL episodes (no limit)',
 		);
 	}
 }
