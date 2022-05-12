@@ -72,10 +72,6 @@ class SSA {
 	 * @static
 	 */
 	public static function instance() {
-		if ( ! defined( 'SSP_TRANSCRIPTS_PLUGIN_FILE' ) || ! defined( 'SSP_TRANSCRIPTS_VERSION' ) ) {
-			return null;
-		}
-
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
 		}
