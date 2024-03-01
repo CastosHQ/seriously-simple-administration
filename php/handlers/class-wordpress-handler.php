@@ -2,10 +2,10 @@
 
 namespace SSA\Handlers;
 
-use WP_Query;
+class Wordpress_Handler extends Abstract_Action_Handler {
+    static function migrate_posts_to_episodes() {
+        $post_ids = DB_Handler::get_audio_file_posts();
 
-class Wordpress_Handler {
-    static function move_posts_to_episodes(){
-
+        DB_Handler::update_post_type('post', SSP_CPT_PODCAST, $post_ids );
     }
 }
