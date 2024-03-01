@@ -53,7 +53,6 @@ class SSA {
 	 */
 	protected function init_controllers() {
 		$controllers = array(
-			'assets'       => 'SSA\Controllers\Env_Controller',
 			'fields'       => 'SSA\Controllers\Plugin_Controller',
 			'settings'     => 'SSA\Controllers\Settings_Controller',
 		);
