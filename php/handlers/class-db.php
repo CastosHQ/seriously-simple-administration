@@ -3,9 +3,8 @@
 namespace SSA\Handlers;
 
 use SSA\Entities\Enclosure;
-use WP_Query;
 
-class DB_Handler extends Abstract_Action_Handler {
+class DB {
     /**
      * @return Enclosure[]
      */
@@ -77,5 +76,14 @@ class DB_Handler extends Abstract_Action_Handler {
         }
 
         return $enclosures;
+    }
+
+    /**
+     * @return \wpdb
+     * */
+    protected static function wpdb() {
+        global $wpdb;
+
+        return $wpdb;
     }
 }

@@ -5,9 +5,6 @@ namespace SSA\Controllers;
 
 use SSA\Entities\Admin_Action;
 use SSA\Handlers\Notice_Handler;
-use SSA\Handlers\Powerpress_Handler;
-use SSA\Handlers\SSP_Admin;
-use SSA\Handlers\Wordpress_Handler;
 
 class Settings_Controller extends Abstract_Controller {
 
@@ -33,7 +30,7 @@ class Settings_Controller extends Abstract_Controller {
     public function setup_development_settings() {
 
         echo '<div class="wrap ssa-settings">';
-        echo '<h1>Admin settings</h1>';
+        echo '<h1>Admin Actions</h1>';
 
         if ( isset( $_GET['ssa_admin_action'] ) ) {
             $admin_action  = filter_var( $_GET['ssa_admin_action'] );
@@ -97,16 +94,7 @@ class Settings_Controller extends Abstract_Controller {
      * @return Admin_Action[]
      */
     public function get_admin_actions() {
-        $actions = array(
-            'migrate_powerpress' => new Admin_Action( array(
-                'title'    => 'Migrate Powerpress',
-                'callback' => array( Powerpress_Handler::class, 'migrate' ),
-            ) ),
-            'migrate_from_posts' => new Admin_Action( array(
-                'title'    => 'Move Posts to Episodes',
-                'callback' => array( Wordpress_Handler::class, 'migrate_posts_to_episodes' ),
-            ) ),
-        );
+        $actions = require SSA_PLUGIN_PATH . 'php/config/admin-actions.php';
 
         return apply_filters( 'ssa_actions', $actions );
     }
