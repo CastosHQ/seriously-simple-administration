@@ -47,6 +47,8 @@ class Settings_Controller extends Abstract_Controller {
         }
 
         echo '</div>';
+
+        $this->activate_action_warning();
     }
 
     protected function print_action_buttons() {
@@ -58,17 +60,15 @@ class Settings_Controller extends Abstract_Controller {
 
         foreach ( $this->get_admin_actions() as $action_key => $action ) {
             $action_url = add_query_arg( 'ssa_admin_action', $action_key );
-            echo '<p><a class="button" href="' . esc_url( $action_url ) . '">' . $action->title . '</a></p>';
+            echo '<p><a class="button js-ensure" href="' . esc_url( $action_url ) . '">' . $action->title . '</a></p>';
         }
-
-        $this->activate_action_warning();
     }
 
     protected function activate_action_warning() {
         ?>
         <script>
 			  jQuery( document ).ready( function( $ ) {
-				  $( '.ssa-settings' ).find( '.button' ).click( function( e ) {
+				  $( '.ssa-settings' ).find( '.js-ensure' ).click( function( e ) {
 					  if ( ! confirm( 'Are you sure?' ) ) {
 						  e.preventDefault();
 						  e.stopPropagation();
