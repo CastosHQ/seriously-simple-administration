@@ -40,3 +40,11 @@ if ( ! defined( 'ABSPATH' ) ) {
     <input class="button js-ensure" type="submit" value="RESET SUBSCRIBERS SYNC">
     <?php wp_nonce_field( 'memberpress_restart_subscribers_sync' ); ?>
 </form>
+
+<br>
+
+<a class="button js-ensure" href="<?php echo add_query_arg('generate_csv', 'true') ?>">
+    Generate CSV
+</a>
+
+<br><br>

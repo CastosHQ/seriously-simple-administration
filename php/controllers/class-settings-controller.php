@@ -3,6 +3,7 @@
 namespace SSA\Controllers;
 
 
+use SSA\Actions\Manage_Memberpress;
 use SSA\Entities\Admin_Action;
 use SSA\Handlers\Notice_Handler;
 
@@ -14,6 +15,18 @@ class Settings_Controller extends Abstract_Controller {
      */
     public function init() {
         add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
+
+        add_action( 'admin_init', array( $this, 'generate_memberpress_csv' ) );
+    }
+
+    public function generate_memberpress_csv() {
+        if (
+            current_user_can( 'manage_options' ) &&
+            'manage_memberpress' === filter_input( INPUT_GET, 'ssa_admin_action' ) &&
+            'true' === filter_input( INPUT_GET, 'generate_csv' )
+        ) {
+            Manage_Memberpress::generate_csv();
+        }
     }
 
     public function add_menu_item() {
