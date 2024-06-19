@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: Seriously Simple Administration
- * Version: 2.3.0
+ * Version: 2.4.0
  * Plugin URI: https://www.castos.com/
  * Description: Basic admin for Seriously Simple Podcasting
  * Author: Castos
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SSA_VERSION', '2.3.0' );
+define( 'SSA_VERSION', '2.4.0' );
 define( 'SSA_PLUGIN_FILE', __FILE__ );
 define( 'SSA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SSA_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
