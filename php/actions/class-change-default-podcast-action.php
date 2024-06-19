@@ -3,14 +3,19 @@
 namespace SSA\Actions;
 
 use SSA\Handlers\Renderer;
-use SSA\Interfaces\Action;
 
-class Change_Default_Podcast_Action implements Action {
+class Change_Default_Podcast_Action extends Abstract_Action {
 
-    public static function run() {
+    protected $id = 'change_default_podcast';
+
+    protected $title = 'Change Default Podcast';
+
+    protected $description = 'Changes the default podcast ID.';
+
+    public function run() {
         $id = filter_input( INPUT_POST, 'new_default_series_id', FILTER_VALIDATE_INT );
         if ( $id && check_admin_referer( 'change_default_podcast_id_ ' . ssp_get_default_series_id() ) ) {
-            self::change_series_id( $id );
+            $this->change_series_id( $id );
 
             return;
         }
@@ -19,7 +24,7 @@ class Change_Default_Podcast_Action implements Action {
         Renderer::render( 'change-default-podcast-form', compact( 'podcasts', 'default_id' ) );
     }
 
-    protected static function change_series_id( $id ) {
+    protected function change_series_id( $id ) {
         $current_series_id = ssp_get_default_series_id();
         if ( is_numeric( $id ) && $id != $current_series_id ) {
             $podcast = get_term_by( 'id', $id, ssp_series_taxonomy() );

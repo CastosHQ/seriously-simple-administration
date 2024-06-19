@@ -4,11 +4,16 @@ namespace SSA\Actions;
 
 use SeriouslySimplePodcasting\Integrations\Memberpress\Memberpress_Integrator;
 use SSA\Handlers\Renderer;
-use SSA\Interfaces\Action;
 
-class Manage_Memberpress implements Action {
+class Manage_Memberpress_Action extends Abstract_Action {
 
-    public static function run() {
+    protected $id = 'manage_memberpress';
+
+    protected $title = 'Manage Memberpress Sync';
+
+    protected $description = 'Displays the current MemberPress sync status and provides the option to reset the sync process.';
+
+    public function run() {
         if ( filter_input( INPUT_POST, 'reset_memberpress_sync' ) ) {
             self::reset_sync_data();
 
@@ -29,7 +34,7 @@ class Manage_Memberpress implements Action {
     }
 
     public static function generate_csv() {
-        $map = get_option( 'ss_memberpress_users_series_map' );
+        $map = get_option( 'ss_memberpress_users_series_map', array() );
 
         header( 'Content-Type: text/csv' );
         header( 'Content-Disposition: attachment; filename="map.csv"' );
