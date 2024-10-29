@@ -3,6 +3,9 @@
 namespace SSA\Controllers;
 
 
+use SSA\Actions\Abstract_Action;
+use SSA\Actions\Manage_Memberpress;
+use SSA\Actions\Manage_Memberpress_Action;
 use SSA\Entities\Admin_Action;
 use SSA\Handlers\Notice_Handler;
 
@@ -14,6 +17,18 @@ class Settings_Controller extends Abstract_Controller {
      */
     public function init() {
         add_action( 'admin_menu', array( $this, 'add_menu_item' ) );
+
+        add_action( 'admin_init', array( $this, 'generate_memberpress_csv' ) );
+    }
+
+    public function generate_memberpress_csv() {
+        if (
+            current_user_can( 'manage_options' ) &&
+            'manage_memberpress' === filter_input( INPUT_GET, 'ssa_admin_action' ) &&
+            'true' === filter_input( INPUT_GET, 'generate_csv' )
+        ) {
+            Manage_Memberpress_Action::generate_csv();
+        }
     }
 
     public function add_menu_item() {
@@ -33,42 +48,48 @@ class Settings_Controller extends Abstract_Controller {
         echo '<h1>Admin Actions</h1>';
 
         if ( isset( $_GET['ssa_admin_action'] ) ) {
-            $admin_action  = filter_var( $_GET['ssa_admin_action'] );
+            $action_string  = filter_var( $_GET['ssa_admin_action'], FILTER_SANITIZE_STRING );
             $admin_actions = $this->get_admin_actions();
 
-            if ( isset( $admin_actions[ $admin_action ] ) ) {
-                call_user_func( $admin_actions[ $admin_action ]->callback );
+            foreach ( $admin_actions as $admin_action ) {
+                if( $admin_action->id() == $action_string ){
+                    $admin_action->run();
+                    break;
+                }
             }
 
             echo '<p><a class="button" href="' . remove_query_arg( 'ssa_admin_action' ) . '"><< Go back</a></p>';
 
         } else {
-            $this->print_action_buttons();
+            $this->render_admin_actions();
         }
 
         echo '</div>';
+
+        $this->activate_action_warning();
     }
 
-    protected function print_action_buttons() {
+    protected function render_admin_actions() {
         $log_path = SSP_PLUGIN_PATH . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
         $log_url  = SSP_PLUGIN_URL . 'log' . DIRECTORY_SEPARATOR . 'ssp.log.' . date( 'd-m-y' ) . '.txt';
         if ( is_file( $log_path ) ) {
             echo '<p><a class="button" href="' . esc_url( $log_url ) . '">Download current log file</a></p>';
         }
 
-        foreach ( $this->get_admin_actions() as $action_key => $action ) {
-            $action_url = add_query_arg( 'ssa_admin_action', $action_key );
-            echo '<p><a class="button" href="' . esc_url( $action_url ) . '">' . $action->title . '</a></p>';
+        foreach ( $this->get_admin_actions() as $action ) {
+            $action_url = add_query_arg( 'ssa_admin_action', $action->id() );
+            $action_url = add_query_arg( 'nonce', wp_create_nonce( $action->id() ), $action_url );
+            echo '<h2>' . esc_html( $action->title() ) . '</h2>';
+            echo '<p>' . esc_html( $action->description() ) . '</p>';
+            echo '<p><a class="button js-ensure" href="' . esc_url( $action_url ) . '">' . esc_html( $action->title() ) . '</a></p><br>';
         }
-
-        $this->activate_action_warning();
     }
 
     protected function activate_action_warning() {
         ?>
         <script>
 			  jQuery( document ).ready( function( $ ) {
-				  $( '.ssa-settings' ).find( '.button' ).click( function( e ) {
+				  $( '.ssa-settings' ).find( '.js-ensure' ).click( function( e ) {
 					  if ( ! confirm( 'Are you sure?' ) ) {
 						  e.preventDefault();
 						  e.stopPropagation();
@@ -91,7 +112,7 @@ class Settings_Controller extends Abstract_Controller {
     }
 
     /**
-     * @return Admin_Action[]
+     * @return Abstract_Action[]
      */
     public function get_admin_actions() {
         $actions = require SSA_PLUGIN_PATH . 'php/config/admin-actions.php';
